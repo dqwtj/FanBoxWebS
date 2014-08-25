@@ -1,7 +1,10 @@
 module APIEntities
-  class Box < Grape::Entity
+  class Tag < Grape::Entity
   
-    expose :id, :name
+    expose :box_id, as: :boxId do |model, opts|
+      (model.id + 3000000000).to_s
+    end
+    expose :name, :hit_count
   
   end
 
@@ -13,8 +16,8 @@ module APIEntities
     expose :title
     expose :height, as: :cardHeight
     expose :favorites_count, as: :favoritesCount
-    expose :image_url, as: :imageUrl
-    expose :preview_image_url, as: :previewImageUrl
+    expose :img_standard_url, as: :imageUrl
+    expose :img_preview_url, as: :previewImageUrl
     expose :userId do |model, opts|
       (model.user.id + 2000000000).to_s
     end
@@ -24,6 +27,6 @@ module APIEntities
     expose :userAvatar do |model, opts|
       model.user.avatar_url
     end
-    expose :boxes, using: APIEntities::Box
+    expose :tags, using: APIEntities::Tag
   end
 end

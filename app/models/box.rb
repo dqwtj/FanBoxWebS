@@ -1,4 +1,9 @@
 class Box < ActiveRecord::Base
+  
   validates :name, :presence => true
-  has_and_belongs_to_many :cards
+  belongs_to :user
+  has_many :tags
+  has_many :cards, through: :tags
+  has_and_belongs_to_many :users, counter_cache: true
+  
 end

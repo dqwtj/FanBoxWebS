@@ -5,8 +5,7 @@ class CreateCards < ActiveRecord::Migration
       t.string :title
       t.integer :height
       t.integer :favorites_count
-      t.string :image_url
-      t.string :preview_image_url
+      t.string :base_url
       t.integer :user_id
       
       t.timestamps
