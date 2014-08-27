@@ -1,8 +1,8 @@
-class CreateUsersBoxes < ActiveRecord::Migration
+class CreateSubscribes < ActiveRecord::Migration
   
   def change
     
-    create_table :users_boxes, id: false do |t|
+    create_table :subscribes, id: false do |t|
       
       t.belongs_to :user
       t.belongs_to :box

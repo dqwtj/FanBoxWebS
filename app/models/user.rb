@@ -3,7 +3,8 @@ class User < ActiveRecord::Base
   validates :mobile, :name, uniqueness: true
   has_many :cards
   has_one :box
-  has_and_belongs_to_many :boxes
+  has_many :subscribes
+  has_many :boxes, through: :subscribes
   
   # 重新生成 Private Token
   def update_private_token
@@ -14,7 +15,9 @@ class User < ActiveRecord::Base
   
   after_create :create_user_box
   def create_user_box
-    self.create_box(name: self.name, user_box: true)
+    self.create_box(name: self.name, box_type: "user")
+    # And something more
+    self.update_private_token
   end
   
 end

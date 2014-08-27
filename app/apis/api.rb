@@ -53,9 +53,17 @@ class API < Grape::API
   
   namespace :stream do
     
-    get do
+    get do   
       present :totalCount, Card.all.count.to_s
       present :data, Card.all, with: APIEntities::Card
+    end
+    
+    get "/home" do
+      authenticate!
+      b_ids = current_user.boxes.ids
+      cards = Card.joins(:tags).where(tags: {box_id: b_ids}).includes(:user, :tags)
+      present :totalCount, cards.count.to_s
+      present :data, cards, with: APIEntities::Card
     end
     
   end
@@ -83,7 +91,7 @@ class API < Grape::API
       box = Box.find(params[:id])
       error!({ "error" => "405 Unknow Box ID" }, 405) unless box
       #TODO: Add hit count
-      present box.cards, with: APIEntities::Card
+      present box, with: APIEntities::Box
     end
     
   end

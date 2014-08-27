@@ -29,4 +29,14 @@ module APIEntities
     end
     expose :tags, using: APIEntities::Tag
   end
+  
+  class Box < Grape::Entity
+    expose :id, as: :boxId do |model, opts|
+      (model.id + 3000000000).to_s
+    end
+    expose :name
+    expose :subscribes_count
+    expose :cards, using: APIEntities::Card
+  end
+  
 end
