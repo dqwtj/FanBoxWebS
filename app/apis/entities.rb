@@ -1,7 +1,9 @@
 module APIEntities
   class Tag < Grape::Entity
   
-    expose :box_id, as: :boxId
+    expose :box_id, as: :boxId do |model, opts|
+      (model.box_id + 3000000000).to_s
+    end
     expose :name
     expose :tag_type, as: :tagType
     expose :hit_count, as: :hitCount, if: lambda { |model, opts| model.tag_type == "tag" }
