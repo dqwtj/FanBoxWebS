@@ -1,25 +1,24 @@
 module APIEntities
   class Tag < Grape::Entity
   
-    expose :box_id, as: :boxId do |model, opts|
-      (model.id + 3000000000).to_s
-    end
-    expose :name, :hit_count
+    expose :box_id, as: :boxId
+    expose :name
+    expose :tag_type, as: :tagType
+    expose :hit_count, as: :hitCount, if: lambda { |model, opts| model.tag_type == "tag" }
   
   end
 
   class Card < Grape::Entity
   
-    expose :id, as: :cardId do |model, opts|
-      (model.id + 1000000000).to_s
-    end
+    expose :card_id, as: :cardId
     expose :title
     expose :height, as: :cardHeight
     expose :favorites_count, as: :favoritesCount
     expose :img_standard_url, as: :imageUrl
     expose :img_preview_url, as: :previewImageUrl
+    #TODO need less SQL query
     expose :userId do |model, opts|
-      (model.user.id + 2000000000).to_s
+      model.user.user_id
     end
     expose :userInfo do |model, opts|
       model.user.info
@@ -36,7 +35,14 @@ module APIEntities
     end
     expose :name
     expose :subscribes_count
-    expose :cards, using: APIEntities::Card
+  end
+  
+  class Profile < Grape::Entity
+    expose :user_id, as: :userId
+    expose :avartar_url, as: :avartarUrl
+    expose :favoritesIds do |model, opts|
+      model.favorites.ids.map {|id| (id+1000000000).to_s }
+    end
   end
   
 end

@@ -45,10 +45,15 @@ Tag.create(card: c1, box: b6, hit_count: 123)
 Tag.create(card: c2, box: b4, hit_count: 111)
 Tag.create(card: c2, box: b5, hit_count: 23)
 
+Tag.create(card: c3, box: b1, hit_count: 156)
 Tag.create(card: c3, box: b2, hit_count: 234)
 Tag.create(card: c3, box: b3, hit_count: 124)
 Tag.create(card: c3, box: b7, hit_count: 234)
 Tag.create(card: c3, box: b8, hit_count: 234)
+
+Tag.create(card: c3, box: i5.box, tag_type: "idol")
+Tag.create(card: c3, box: i6.box, tag_type: "idol")
+Tag.create(card: c3, box: i7.box, tag_type: "idol")
 
 Tag.create(card: c4, box: b2, hit_count: 432)
 Tag.create(card: c4, box: b3, hit_count: 24)
@@ -74,3 +79,4 @@ Subscribe.create(user: u2, box: b4)
 Subscribe.create(user: u2, box: b4)
 Subscribe.create(user: u2, box: b4)
 
+u1.favorites << [c5, c6, c7]

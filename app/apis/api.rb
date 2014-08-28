@@ -1,3 +1,6 @@
+require 'will_paginate'
+require 'will_paginate/active_record'
+
 class API < Grape::API
   
   version 'dev', :using => :path
@@ -49,19 +52,24 @@ class API < Grape::API
       present current_user.boxes, with: APIEntities::Box
     end
     
+    get "/profile" do
+      authenticate!
+      present current_user, with: APIEntities::Profile
+    end
+    
   end
   
   namespace :stream do
     
     get do   
       present :totalCount, Card.all.count.to_s
-      present :data, Card.all, with: APIEntities::Card
+      present :data, Card.all.paginate(:page => params[:page], :per_page => 10), with: APIEntities::Card
     end
     
     get "/home" do
       authenticate!
       b_ids = current_user.boxes.ids
-      cards = Card.joins(:tags).where(tags: {box_id: b_ids}).includes(:user, :tags)
+      cards = Card.joins(:tags).where(tags: {box_id: b_ids}).includes(:user, :tags).paginate(:page => params[:page], :per_page => 3)
       present :totalCount, cards.count.to_s
       present :data, cards, with: APIEntities::Card
     end
@@ -72,7 +80,7 @@ class API < Grape::API
     
     post "/:id/subscribe" do
       authenticate!
-      box = Box.find(params[:id])
+      box = Box.find(params[:id].to_i - 3000000000)
       error!({ "error" => "405 Unknow Box ID" }, 405) unless box
       current_user.boxes << box
       { result: "1", message: "success" }
@@ -80,7 +88,7 @@ class API < Grape::API
     
     post "/:id/unsubscribe" do
       authenticate!
-      box = current_user.boxes.find(params[:id])
+      box = current_user.boxes.find(params[:id].to_i - 3000000000)
       error!({ "error" => "405 Unknow Box ID" }, 405) unless box
       current_user.boxes.delete(box)
       { result: "1", message: "success" }
@@ -88,10 +96,12 @@ class API < Grape::API
     
     get "/:id/touch" do
       authenticate!
-      box = Box.find(params[:id])
+      box = Box.find(params[:id].to_i - 3000000000)
       error!({ "error" => "405 Unknow Box ID" }, 405) unless box
       #TODO: Add hit count
-      present box, with: APIEntities::Box
+      present :boxInfo, box, with: APIEntities::Box
+      present :totalCount, box.cards.count.to_s
+      present :cards, box.cards.paginate(:page => params[:page], :per_page => 3), with: APIEntities::Card
     end
     
   end
@@ -99,6 +109,8 @@ class API < Grape::API
   resources :cards do
     
     get "/favorites" do
+      authenticate!
+      current_user.
       Card.all.ids.map {|id| (id+1000000000).to_s }
     end
     

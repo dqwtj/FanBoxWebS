@@ -3,6 +3,7 @@ class Card < ActiveRecord::Base
   belongs_to :user
   has_many :tags
   has_many :boxes, through: :tags
+  has_and_belongs_to_many :users
   
   def img_preview_url
     self.base_url.blank? ? "#" : self.upyun_url+self.base_url+"!preview"
@@ -10,6 +11,10 @@ class Card < ActiveRecord::Base
   
   def img_standard_url
     self.base_url.blank? ? "#" : self.upyun_url+self.base_url+"!standard"
+  end
+  
+  def card_id
+    (self.id + 1000000000).to_s
   end
   
   protected
