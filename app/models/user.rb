@@ -1,10 +1,12 @@
 class User < ActiveRecord::Base
-  validates :name, :mobile, :encrypted_password, presence: true
-  validates :mobile, :name, uniqueness: true
+  validates :name, :encrypted_password, presence: true
+  validates :name, uniqueness: true
   has_many :cards
   has_one :box
   has_many :subscribes
   has_many :boxes, through: :subscribes
+  has_many :fans
+  has_many :idols, through: :fans
   has_and_belongs_to_many :favorites, class_name: "Card"
   
   

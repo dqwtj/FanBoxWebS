@@ -7,8 +7,12 @@ class CreateUsers < ActiveRecord::Migration
       t.string :mobile
       t.string :encrypted_password
       t.string :private_token
+      t.string :weibo_uid
       t.text :info
+      t.string :birth_date
       t.string :avatar_url
+      t.string :address
+      t.string :gender
       
       t.timestamps
     end

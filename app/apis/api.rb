@@ -20,13 +20,16 @@ class API < Grape::API
   resources :users do
     
     post "/sign_up" do
-      signature = Digest::MD5.hexdigest(params[:mobile] + '&'+'vuEqnXFYyJnGiiJeI7lbwpmHI0M')
+      # signature = Digest::MD5.hexdigest(params[:mobile] + '&'+'vuEqnXFYyJnGiiJeI7lbwpmHI0M')
       # error!({ "error" => "401 Unauthorized" }, 401) unless signature = params[:signature]
-      error!({ "error" => "404 Creatation Failed", "messange" =>  "Box Name Used" }, 404) if box.find_by name: params[:name]
+      error!({ "error" => "404 Creatation Failed", "messange" =>  "Box Name Used" }, 404) if Box.find_by name: params[:name]
+      error!({ "error" => "404 Creatation Failed", "messange" =>  "Mobile Number Used" }, 404) if User.find_by mobile: params[:mobile]
+      error!({ "error" => "404 Creatation Failed", "messange" =>  "Weibo ID Used" }, 404) if User.find_by weibo_uid: params[:uid]
       user = User.new do |u|
         u.name = params[:name]
         u.mobile = params[:mobile]
         u.encrypted_password = params[:password]
+        u.weibo_uid = params[:uid]
       end
       if user.save
         present :token, user.update_private_token
@@ -36,25 +39,61 @@ class API < Grape::API
     end
     
     post "/sign_in" do
-      user = User.find_by mobile: params['mobile']
+      error!({ "error" => "402 Unknow Mobile User" }, 402) unless params[:mobile]
+      user = User.find_by mobile: params[:mobile]
       error!({ "error" => "402 Unknow Mobile User" }, 402) unless user
       error!({ "error" => "403 Wrong Password" }, 403) unless user.encrypted_password == params[:password]
       present :token, user.update_private_token
     end
     
-    get "/my_tags" do
-      authenticate!
-      present current_user.boxes.where(user_box: false), with: APIEntities::Box
+    post "/weibo_sign_in" do
+      error!({ "error" => "406 Unknow Weibo User" }, 406) unless params[:uid]
+      user = User.find_by weibo_uid: params[:uid]
+      error!({ "error" => "406 Unknow Weibo User" }, 406) unless user
+      present :token, user.update_private_token
     end
     
-    get "/my_subscribes" do
-      authenticate!
-      present current_user.boxes, with: APIEntities::Box
+    post "/weibo_unband" do
+      error!({ "error" => "406 Unknow Weibo User" }, 406) unless params[:uid]
+      user = User.find_by weibo_uid: params[:uid]
+      error!({ "error" => "406 Unknow Weibo User" }, 406) unless user
+      if user.mobile
+        user.update(weibo_uid: null)
+      else
+        error!({ "error" => "407 Unband Weibo Failed", "message" => "No Mobile Infomation" }, 407) unless user
+      end
     end
     
     get "/profile" do
       authenticate!
       present current_user, with: APIEntities::Profile
+    end
+    
+    put "/profile" do
+      authenticate!
+      current_user.name = params[:name] if params[:name]
+      current_user.email = params[:email] if params[:email]
+      current_user.info = params[:info] if params[:info]
+      current_user.avatar_url = params[:avatar_url] if params[:avatar_url]
+      current_user.address = params[:address] if params[:address]
+      current_user.gender = params[:gender] if params[:gender]
+      if current_user.save
+        { result: "1", message: "success" }
+      else
+        error!({ "error" => "404 Update Failed", "message" => current_user.errors }, 404)
+      end
+    end
+    
+    get "/:id" do
+      authenticate!
+      user = User.find(params[:id].to_i - 2000000000)
+      if user
+        present :userInfo, user, with: APIEntities::User
+        present :totalCount, user.cards.count.to_s
+        present :cards, user.cards.paginate(:page => params[:page], :per_page => 3), with: APIEntities::Card
+      else
+        error!({ "error" => "408 Unknow User ID" }, 408) unless user
+      end
     end
     
   end
@@ -126,6 +165,38 @@ class API < Grape::API
     put "/:id/update" do
       authenticate!
       #TODO update func
+    end
+    
+  end
+  
+  resources :idols do
+    
+    get "/:id" do
+      
+      authenticate!
+      idol = Idol.find(params[:id].to_i - 4000000000)
+      error!({ "error" => "409 Unknow Idol ID" }, 409) unless idol
+      present :idolInfo, idol, with: APIEntities::Idol
+      present :totalCount, idol.cards.count.to_s
+      present :cards, idol.cards.paginate(:page => params[:page], :per_page => 3), with: APIEntities::Card
+      
+    end
+    
+    post "/:id/fan" do
+      
+      authenticate!
+      idol = Idol.find(params[:id].to_i - 4000000000)
+      error!({ "error" => "409 Unknow Idol ID" }, 409) unless idol
+      current_user.idols << idol
+      
+    end
+    
+    get "/:id/hot" do
+      
+      authenticate!
+      idol = Idol.find(params[:id].to_i - 4000000000)
+      error!({ "error" => "409 Unknow Idol ID" }, 409) unless idol
+      
     end
     
   end

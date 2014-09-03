@@ -6,6 +6,7 @@ class CreateIdols < ActiveRecord::Migration
       t.text :info
       t.string :avatar_url
       t.string :weibo_url
+      t.integer :fans_count
       
       t.timestamps
     end

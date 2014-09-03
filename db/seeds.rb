@@ -79,4 +79,9 @@ Subscribe.create(user: u2, box: b4)
 Subscribe.create(user: u2, box: b4)
 Subscribe.create(user: u2, box: b4)
 
+Fan.create(user: u1, idol: i1)
+Fan.create(user: u1, idol: i2)
+Fan.create(user: u1, idol: i3)
+Fan.create(user: u1, idol: i4)
+
 u1.favorites << [c5, c6, c7]

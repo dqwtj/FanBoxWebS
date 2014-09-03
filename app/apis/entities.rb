@@ -36,15 +36,26 @@ module APIEntities
       (model.id + 3000000000).to_s
     end
     expose :name
-    expose :subscribes_count
   end
   
   class Profile < Grape::Entity
     expose :user_id, as: :userId
-    expose :avartar_url, as: :avartarUrl
+    expose :avatar_url, as: :avatarUrl
     expose :favoritesIds do |model, opts|
       model.favorites.ids.map {|id| (id+1000000000).to_s }
     end
+  end
+  
+  class Idol < Grape::Entity
+    expose :idol_id, as: :idolId
+    expose :name
+  end
+  
+  class User < Grape::Entity
+    expose :user_id, as: :userId
+    expose :name, :gender, :address, :info
+    expose :avatar_url, as: :avatarUrl
+    expose :idols, using: APIEntities::Idol
   end
   
 end
