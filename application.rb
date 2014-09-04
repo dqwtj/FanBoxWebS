@@ -9,6 +9,9 @@ case ENV["RACK_ENV"]
   when "development"
     logger = ::Logger.new(STDOUT)
     logger.level = ::Logger::DEBUG
+  when "test"
+    logger = ::Logger.new(STDOUT)
+    logger.level = ::Logger::DEBUG
   else
   logger = ::Logger.new("/dev/null")
 end
