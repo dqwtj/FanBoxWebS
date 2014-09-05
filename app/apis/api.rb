@@ -58,7 +58,8 @@ class API < Grape::API
       user = User.find_by weibo_uid: params[:uid]
       error!({ "error" => "406 Unknow Weibo User" }, 406) unless user
       if user.mobile
-        user.update(weibo_uid: null)
+        user.update(weibo_uid: nil)
+        { result: "1", message: "success" }
       else
         error!({ "error" => "407 Unband Weibo Failed", "message" => "No Mobile Infomation" }, 407) unless user
       end

@@ -41,6 +41,10 @@ module APIEntities
   class Profile < Grape::Entity
     expose :user_id, as: :userId
     expose :avatar_url, as: :avatarUrl
+    expose :info, :address, :gender
+    expose :cardsIds do |model, opts|
+      model.cards.ids.map {|id| (id+1000000000).to_s }
+    end
     expose :favoritesIds do |model, opts|
       model.favorites.ids.map {|id| (id+1000000000).to_s }
     end
