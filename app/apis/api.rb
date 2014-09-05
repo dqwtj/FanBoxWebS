@@ -134,11 +134,29 @@ class API < Grape::API
       { result: "1", message: "success" }
     end
     
-    get "/:id/touch" do
+    get "/:id" do
       authenticate!
       box = Box.find(params[:id].to_i - 3000000000)
       error!({ "error" => "405 Unknow Box ID" }, 405) unless box
-      #TODO: Add hit count
+      
+      Box.increment_counter(:hit_count, box.id)
+      
+      present :boxInfo, box, with: APIEntities::Box
+      present :totalCount, box.cards.count.to_s
+      present :cards, box.cards.paginate(:page => params[:page], :per_page => 3), with: APIEntities::Card
+    end
+    
+    get "/:id/touch/:cid" do
+      authenticate!
+      box = Box.find(params[:id].to_i - 3000000000)
+      card = Card.find(params[:cid].to_i - 1000000000)
+      tag = card.tags.find_by box_id: box.id
+      error!({ "error" => "405 Unknow Box ID" }, 405) unless box
+      
+      Box.increment_counter(:hit_count, box.id)
+      #TODO: need lock? 
+      tag.update(hit_count: tag.hit_count+1)
+      
       present :boxInfo, box, with: APIEntities::Box
       present :totalCount, box.cards.count.to_s
       present :cards, box.cards.paginate(:page => params[:page], :per_page => 3), with: APIEntities::Card
