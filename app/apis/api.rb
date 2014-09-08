@@ -207,14 +207,16 @@ class API < Grape::API
       idol = Idol.find(params[:id].to_i - 4000000000)
       error!({ "error" => "409 Unknow Idol ID" }, 409) unless idol
       current_user.idols << idol
-      
+      { result: "1", message: "success" }
     end
     
-    get "/:id/hot" do
+    get "/:id/hot_boxes" do
       
       authenticate!
       idol = Idol.find(params[:id].to_i - 4000000000)
       error!({ "error" => "409 Unknow Idol ID" }, 409) unless idol
+      present :totalCount, idol.boxes.count.to_s
+      present :boxes, idol.boxes.order(hit_count: :desc).paginate(:page => params[:page], :per_page => 10), with: APIEntities::Box
       
     end
     

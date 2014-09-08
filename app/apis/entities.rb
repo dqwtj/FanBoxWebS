@@ -36,6 +36,7 @@ module APIEntities
       (model.id + 3000000000).to_s
     end
     expose :name
+    expose :hit_count, as: :hitCount
   end
   
   class Profile < Grape::Entity

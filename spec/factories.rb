@@ -37,6 +37,7 @@ FactoryGirl.define do
     user
   end
   
+  # Box Realted Model Factories
   factory :subscribe do
     user factory: :user
     box
@@ -68,6 +69,43 @@ FactoryGirl.define do
 
       after(:create) do |box, evaluator|
         create_list(:tag, evaluator.cards_count, box: box)
+      end
+    end
+    
+  end
+  
+  # Idol Related Model Factories
+  factory :fan do
+    user factory: :user
+    idol
+  end
+  
+  factory :mark do
+    card factory: :card
+    idol
+  end
+  
+  factory :idol do
+    sequence(:name)           { |n| "大偶像#{n}号"}
+    info  "我是测试用的迷人大偶像"
+    
+    factory :idol_with_fans do
+      ignore do
+        fans_count 10
+      end
+
+      after(:create) do |idol, evaluator|
+        create_list(:fan, evaluator.fans_count, idol: idol)
+      end
+    end
+    
+    factory :idol_with_cards do
+      ignore do
+        cards_count 5
+      end
+
+      after(:create) do |idol, evaluator|
+        create_list(:mark, evaluator.cards_count, idol: idol)
       end
     end
     
