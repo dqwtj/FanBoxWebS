@@ -166,24 +166,91 @@ class API < Grape::API
   
   resources :cards do
     
-    get "/favorites" do
+    post  do
       authenticate!
-      current_user.
-      Card.all.ids.map {|id| (id+1000000000).to_s }
+      card = Card.new
+      card.title = params[:title] if params[:title]
+      card.height = params[:height] if params[:height]
+      card.base_url = params[:base_url] if params[:base_url]
+      if card.save
+        current_user.cards << card
+        { result: "1", message: "success" }
+      else
+        error!({ "error" => "410 Creation Failed", "message" => card.errors }, 410)
+      end
     end
     
-    post "/:id/collect" do
+    put "/:id" do
+      authenticate!
+      card = current_user.cards.find(params[:id].to_i - 1000000000)
+      error!({ "error" => "409 Unknow Card ID" }, 409) unless card
+      card.title = params[:title] if params[:title]
+      card.height = params[:height] if params[:height]
+      card.base_url = params[:base_url] if params[:info]
+      if card.save
+        { result: "1", message: "success" }
+      else
+        error!({ "error" => "404 Creation Failed", "message" => card.errors }, 404)
+      end
+    end
+    
+    post "/:id/favorite" do
+      authenticate!
+      card = Card.find(params[:id].to_i - 1000000000)
+      error!({ "error" => "409 Unknow Card ID" }, 409) unless card
+      current_user.favorites << card if card
       { result: "1", message: "success" }
     end
     
-    post "/create" do
+    post "/:id/unfavorite" do
       authenticate!
-      #TODO create func
+      card = Card.find(params[:id].to_i - 1000000000)
+      error!({ "error" => "409 Unknow Card ID" }, 409) unless card
+      current_user.favorites.delete(card) if card
+      { result: "1", message: "success" }
     end
     
-    put "/:id/update" do
+    post "/:id/tag" do
       authenticate!
-      #TODO update func
+      card = Card.find(params[:id].to_i - 1000000000)
+      error!({ "error" => "409 Unknow Card ID" }, 409) unless card
+      params[:box_ids].each do |id|
+        bid = id.to_i - 3000000000
+        if !card.boxes.ids.include?(bid) 
+          box = Box.find(bid)
+          card.boxes << box if box
+        end
+      end
+      { result: "1", message: "success" }
+    end
+    
+    post "/:id/mark" do
+      authenticate!
+      card = Card.find(params[:id].to_i - 1000000000)
+      error!({ "error" => "409 Unknow Card ID" }, 409) unless card
+      params[:idol_ids].each do |id|
+        iid = id.to_i - 4000000000
+        if !card.idols.ids.include?(iid) 
+          idol = Idol.find(iid)
+          card.idols << idol if idol
+        end
+      end
+      { result: "1", message: "success" }
+    end
+    
+    post "/:id/report" do
+      authenticate!
+      card = Card.find(params[:id].to_i - 1000000000)
+      error!({ "error" => "409 Unknow Card ID" }, 409) unless card
+      { result: "1", message: "success" }
+    end
+    
+    delete "/:id" do
+      authenticate!
+      card = current_user.cards.find(params[:id].to_i - 1000000000)
+      error!({ "error" => "409 Unknow Card ID" }, 409) unless card
+      card.destroy
+      { result: "1", message: "success" }
     end
     
   end

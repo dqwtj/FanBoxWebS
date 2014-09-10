@@ -13,6 +13,7 @@ class CreateUsers < ActiveRecord::Migration
       t.string :avatar_url
       t.string :address
       t.string :gender
+      t.integer :cards_count
       
       t.timestamps
     end

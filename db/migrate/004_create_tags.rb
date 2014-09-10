@@ -1,7 +1,7 @@
 class CreateTags < ActiveRecord::Migration
   
   def change
-    create_table :tags do |t|
+    create_table :tags, id: false do |t|
       
       t.belongs_to :box
       t.belongs_to :card

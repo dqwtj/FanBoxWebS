@@ -1,9 +1,11 @@
 class Card < ActiveRecord::Base
   validates :title, :presence => true
-  belongs_to :user
+  belongs_to :user, counter_cache: true
   has_many :tags
   has_many :boxes, through: :tags
   has_and_belongs_to_many :users
+  has_many :marks
+  has_many :idols, through: :marks
   
   def img_preview_url
     self.base_url.blank? ? "#" : self.upyun_url+self.base_url+"!preview"
