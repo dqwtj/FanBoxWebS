@@ -109,7 +109,7 @@ class API < Grape::API
     get "/home" do
       authenticate!
       b_ids = current_user.boxes.ids
-      cards = Card.joins(:tags).where(tags: {box_id: b_ids}).includes(:user, :tags).paginate(:page => params[:page], :per_page => 3)
+      cards = Card.joins(:tags).where(tags: {box_id: b_ids}).includes(:user, :tags, :idols).paginate(:page => params[:page], :per_page => 10)
       present :totalCount, cards.count.to_s
       present :data, cards, with: APIEntities::Card
     end
@@ -143,7 +143,7 @@ class API < Grape::API
       
       present :boxInfo, box, with: APIEntities::Box
       present :totalCount, box.cards.count.to_s
-      present :cards, box.cards.paginate(:page => params[:page], :per_page => 3), with: APIEntities::Card
+      present :cards, box.cards.paginate(:page => params[:page], :per_page => 10), with: APIEntities::Card
     end
     
     get "/:id/touch/:cid" do
@@ -159,7 +159,7 @@ class API < Grape::API
       
       present :boxInfo, box, with: APIEntities::Box
       present :totalCount, box.cards.count.to_s
-      present :cards, box.cards.paginate(:page => params[:page], :per_page => 3), with: APIEntities::Card
+      present :cards, box.cards.paginate(:page => params[:page], :per_page => 10), with: APIEntities::Card
     end
     
   end
@@ -264,7 +264,7 @@ class API < Grape::API
       error!({ "error" => "409 Unknow Idol ID" }, 409) unless idol
       present :idolInfo, idol, with: APIEntities::Idol
       present :totalCount, idol.cards.count.to_s
-      present :cards, idol.cards.paginate(:page => params[:page], :per_page => 3), with: APIEntities::Card
+      present :cards, idol.cards.paginate(:page => params[:page], :per_page => 10), with: APIEntities::Card
       
     end
     

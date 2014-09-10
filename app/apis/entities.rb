@@ -9,6 +9,12 @@ module APIEntities
     expose :hit_count, as: :hitCount, if: lambda { |model, opts| model.tag_type == "tag" }
   
   end
+  
+  class Idol < Grape::Entity
+    expose :idol_id, as: :idolId
+    expose :name
+    expose :avatar_url, as: :avatarUrl
+  end
 
   class Card < Grape::Entity
   
@@ -29,6 +35,7 @@ module APIEntities
       model.user.avatar_url
     end
     expose :tags, using: APIEntities::Tag
+    expose :idols, using: APIEntities::Idol
   end
   
   class Box < Grape::Entity
@@ -49,11 +56,6 @@ module APIEntities
     expose :favoritesIds do |model, opts|
       model.favorites.ids.map {|id| (id+1000000000).to_s }
     end
-  end
-  
-  class Idol < Grape::Entity
-    expose :idol_id, as: :idolId
-    expose :name
   end
   
   class User < Grape::Entity

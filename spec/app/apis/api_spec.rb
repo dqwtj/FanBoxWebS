@@ -7,18 +7,45 @@ describe API do
     API
   end
   
-  describe "POST /dev/users/sign_up" do
-    it "returns an private token" do
-      post "/dev/users/sign_up", :name => "测试用户1", :mobile => "1234567890", :password => "1234567"
-      expect(last_response.status).to eq(201)
+  describe "GET /dev/stream" do
+    it "returns a list of cards" do
+      create_list(:card, 16)
+      
+      get "/dev/stream"
+      expect(last_response.status).to eq(200)
+      json = JSON.parse(last_response.body)
+      expect(json["totalCount"]).to eq("16")
+      expect(json["data"].size).to eq(10)
+      
+      get "/dev/stream", :page => 2
+      expect(last_response.status).to eq(200)
+      json = JSON.parse(last_response.body)
+      expect(json["totalCount"]).to eq("16")
+      expect(json["data"].size).to eq(6)
+      
     end
   end
   
-  describe "POST /dev/users/sign_in" do
-    it "sign in with mobile, returns an private token" do
+  describe "GET /dev/stream/home" do
+    it "returns a list of cards" do
       user = create(:user)
-      post "/dev/users/sign_in", :mobile => user.mobile, :password => user.encrypted_password
-      expect(last_response.status).to eq(201)
+      box1 = create(:box_with_cards, cards_count: 8)
+      box2 = create(:box_with_cards, cards_count: 8)
+      box3 = create(:box_with_cards, cards_count: 8)
+      user.boxes << [box1, box2]
+      
+      get "/dev/stream/home", :token => user.private_token
+      expect(last_response.status).to eq(200)
+      json = JSON.parse(last_response.body)
+      expect(json["totalCount"]).to eq("16")
+      expect(json["data"].size).to eq(10)
+      
+      get "/dev/stream/home",:token => user.private_token, :page => 2
+      expect(last_response.status).to eq(200)
+      json = JSON.parse(last_response.body)
+      expect(json["totalCount"]).to eq("16")
+      expect(json["data"].size).to eq(6)
+      
     end
   end
 
