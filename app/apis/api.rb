@@ -174,7 +174,7 @@ class API < Grape::API
       card.base_url = params[:base_url] if params[:base_url]
       if card.save
         current_user.cards << card
-        { result: "1", message: "success" }
+        { result: "1", message: card.card_id }
       else
         error!({ "error" => "410 Creation Failed", "message" => card.errors }, 410)
       end
