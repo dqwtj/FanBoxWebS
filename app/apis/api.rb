@@ -118,6 +118,13 @@ class API < Grape::API
   
   resources :boxes do
     
+    get "/hot" do
+      authenticate!
+      boxes = Box.where(:box_type => "tag")
+      present :totalCount, boxes.count.to_s
+      present :boxes, boxes.order(hit_count: :desc).paginate(:page => params[:page], :per_page => 20), with: APIEntities::Box
+    end
+    
     post "/:id/subscribe" do
       authenticate!
       box = Box.find(params[:id].to_i - 3000000000)

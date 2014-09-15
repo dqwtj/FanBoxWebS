@@ -11,19 +11,19 @@ describe API, "boxes", :type => :request do
     
     it "returns a box info with cards" do
       
-      box = create(:box_with_cards, cards_count: 10)
+      box = create(:box_with_cards, cards_count: 11)
       user = create(:user)
       
       get "/dev/boxes/"+box.box_id, :token => user.private_token
       expect(last_response.status).to eq(200)
       json = JSON.parse(last_response.body)
-      expect(json["totalCount"]).to eq("10")
-      expect(json["cards"].size).to eq(3)
+      expect(json["totalCount"]).to eq("11")
+      expect(json["cards"].size).to eq(10)
       
-      get "/dev/boxes/"+box.box_id, :token => user.private_token, :page => 4
+      get "/dev/boxes/"+box.box_id, :token => user.private_token, :page => 2
       expect(last_response.status).to eq(200)
       json = JSON.parse(last_response.body)
-      expect(json["totalCount"]).to eq("10")
+      expect(json["totalCount"]).to eq("11")
       expect(json["cards"].size).to eq(1)
       
       box.reload
@@ -37,20 +37,20 @@ describe API, "boxes", :type => :request do
     
     it "returns a box info with cards" do
       
-      box = create(:box_with_cards, cards_count: 10)
+      box = create(:box_with_cards, cards_count: 11)
       card = Card.last
       user = create(:user)
       
       get "/dev/boxes/"+box.box_id+"/touch/"+card.card_id, :token => user.private_token
       expect(last_response.status).to eq(200)
       json = JSON.parse(last_response.body)
-      expect(json["totalCount"]).to eq("10")
-      expect(json["cards"].size).to eq(3)
+      expect(json["totalCount"]).to eq("11")
+      expect(json["cards"].size).to eq(10)
       
-      get "/dev/boxes/"+box.box_id+"/touch/"+card.card_id, :token => user.private_token, :page => 4
+      get "/dev/boxes/"+box.box_id+"/touch/"+card.card_id, :token => user.private_token, :page => 2
       expect(last_response.status).to eq(200)
       json = JSON.parse(last_response.body)
-      expect(json["totalCount"]).to eq("10")
+      expect(json["totalCount"]).to eq("11")
       expect(json["cards"].size).to eq(1)
       
       tag = card.tags.find_by box_id: box.id
@@ -91,6 +91,28 @@ describe API, "boxes", :type => :request do
       box.reload
       expect(box.subscribes_count).to eq( 4 )
     
+    end
+    
+  end
+  
+  describe "GET /dev/boxes/hot" do
+    
+    it "return a list of boxes" do
+      
+      idol = create(:idol)
+      user = create(:user)
+      idol.boxes << create(:box, hit_count: 123)
+      idol.boxes << create(:box, hit_count: 112)
+      idol.boxes << create(:box, hit_count: 68)
+      idol.boxes << create(:box, hit_count: 23)
+      
+      get "/dev/boxes/hot", :token => user.private_token
+      
+      expect(last_response.status).to eq(200)
+      json = JSON.parse(last_response.body)
+      expect(json["totalCount"]).to eq("4")
+      expect(json["boxes"][0]["hitCount"]).to eq(123)
+      
     end
     
   end
