@@ -11,19 +11,19 @@ describe API, "idols", :type => :request do
     
     it "returns an idol info with cards" do
       
-      idol = create(:idol_with_cards, cards_count: 10)
+      idol = create(:idol_with_cards, cards_count: 11)
       user = create(:user)
       
       get "/dev/idols/"+idol.idol_id, :token => user.private_token
       expect(last_response.status).to eq(200)
       json = JSON.parse(last_response.body)
-      expect(json["totalCount"]).to eq("10")
-      expect(json["cards"].size).to eq(3)
+      expect(json["totalCount"]).to eq("11")
+      expect(json["cards"].size).to eq(10)
       
-      get "/dev/idols/"+idol.idol_id, :token => user.private_token, :page => 4
+      get "/dev/idols/"+idol.idol_id, :token => user.private_token, :page => 2
       expect(last_response.status).to eq(200)
       json = JSON.parse(last_response.body)
-      expect(json["totalCount"]).to eq("10")
+      expect(json["totalCount"]).to eq("11")
       expect(json["cards"].size).to eq(1)
       
     end

@@ -22,9 +22,9 @@ class API < Grape::API
     post "/sign_up" do
       # signature = Digest::MD5.hexdigest(params[:mobile] + '&'+'vuEqnXFYyJnGiiJeI7lbwpmHI0M')
       # error!({ "error" => "401 Unauthorized" }, 401) unless signature = params[:signature]
-      error!({ "error" => "404 Creatation Failed", "messange" =>  "Box Name Used" }, 404) if Box.find_by name: params[:name]
+      error!({ "error" => "404 Creatation Failed", "messange" =>  "User Name Used" }, 404) if Box.find_by name: params[:name]
       error!({ "error" => "404 Creatation Failed", "messange" =>  "Mobile Number Used" }, 404) if User.find_by mobile: params[:mobile]
-      error!({ "error" => "404 Creatation Failed", "messange" =>  "Weibo ID Used" }, 404) if User.find_by weibo_uid: params[:uid]
+      error!({ "error" => "404 Creatation Failed", "messange" =>  "User Name Used" }, 404) if User.find_by name: params[:name]
       user = User.new do |u|
         u.name = params[:name]
         u.mobile = params[:mobile]
@@ -293,7 +293,7 @@ class API < Grape::API
       present :boxes, idol.boxes.order(hit_count: :desc).paginate(:page => params[:page], :per_page => 10), with: APIEntities::Box
       
     end
-    
+        
   end
   
 end
