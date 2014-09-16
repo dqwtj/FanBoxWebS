@@ -73,7 +73,7 @@ describe API, "users", :type => :request do
     
   end
   
-  describe "PUT /dev/users/profle" do
+  describe "PUT /dev/users/profile" do
     
     it "return success message" do
       user = create(:user)

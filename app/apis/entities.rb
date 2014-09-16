@@ -56,9 +56,7 @@ module APIEntities
     expose :favoritesIds do |model, opts|
       model.favorites.ids.map {|id| (id+1000000000).to_s }
     end
-    expose :boxIds do |model, opts|
-      model.boxes.ids.map {|id| (id+3000000000).to_s }
-    end
+    expose :boxes, using: APIEntities::Box
   end
   
   class User < Grape::Entity
