@@ -97,6 +97,12 @@ class API < Grape::API
       end
     end
     
+    get "/favorites" do
+      authenticate!
+      present :totalCount, current_user.favorites.count.to_s
+      present :cards, current_user.favorites.paginate(:page => params[:page], :per_page => 10), with: APIEntities::Card
+    end
+    
   end
   
   namespace :stream do
