@@ -6,4 +6,3 @@ use ActiveRecord::ConnectionAdapters::ConnectionManagement
 
 # Boot application
 run ::API
-run ::Admin
