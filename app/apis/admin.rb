@@ -1,3 +1,4 @@
+# encoding: utf-8
 require 'net/ftp'
 
 class Admin < Grape::API
@@ -6,16 +7,31 @@ class Admin < Grape::API
   format :json
   
   helpers do
-    def load_idol(ftp, idol)
-      
-      ftp.nlst.each do |dir|
-        puts dir.force_encoding("utf-8")
+    
+    def is_image_file?(fname)
+      if fname.include?(".jpg") || fname.include?(".png") || fname.include?(".jpeg") || fname.include?(".gif")
+        true
+      else
+        false
       end
-      
     end
     
-    def is_dir?(name)
-      true
+    def print_all_image(ftp, url)
+      ftp.chdir(url)
+      ftp.nlst.each do |file|
+        fname = file.force_encoding("utf-8")
+        if is_image_file?(fname)
+          card = Card.new
+          card.base_url = url+"/"+fname
+          card.reset_from_base
+          card.save
+          #puts @counter.to_s + ":" + url+"/"+fname
+          #@counter += 1
+        else
+          print_all_image(ftp, url+"/"+fname)
+        end
+      end
+      ftp.chdir("..")
     end
     
   end
@@ -28,19 +44,18 @@ class Admin < Grape::API
       @user = "dqwtj/fanhe-photo"
       @password = "zqpm0120110705"
       @passive = true
+      @counter = 0
       
       ftp = Net::FTP.new(@host, @user, @password)
       ftp.passive = @passive
       
       puts "logged in, start shooting..."
       
-      ftp.chdir('/upload/'+params[:dir])
+      url = "/upload/dev"
       
-      ftp.nlst.each do |dir|
-        load_idol(ftp, dir.force_encoding("utf-8")) if is_dir?(dir.force_encoding("utf-8"))
-      end
+      print_all_image(ftp, url)
       
-      present :msg, "I feel good"
+      #present :msg, files
       
     end
     
