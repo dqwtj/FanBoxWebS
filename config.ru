@@ -5,4 +5,4 @@ require File.expand_path("../boot", __FILE__)
 use ActiveRecord::ConnectionAdapters::ConnectionManagement
 
 # Boot application
-run ::Admin
+run ::API

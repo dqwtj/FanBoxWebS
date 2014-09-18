@@ -270,6 +270,14 @@ class API < Grape::API
   
   resources :idols do
     
+    get do
+      
+      authenticate!
+      present :totalCount, Idol.all.count.to_s
+      present :idols, idol.cards.paginate(:page => params[:page], :per_page => 10), with: APIEntities::Idol
+      
+    end
+    
     get "/:id" do
       
       authenticate!
