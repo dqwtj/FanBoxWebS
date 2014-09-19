@@ -1,5 +1,7 @@
 # encoding: utf-8
 require 'net/ftp'
+require 'erb'
+require 'open-uri'
 
 class Admin < Grape::API
   
@@ -16,19 +18,36 @@ class Admin < Grape::API
       end
     end
     
-    def print_all_image(ftp, url)
-      ftp.chdir(url)
+    def print_all_image(ftp, url, key)
+      ftp.chdir(key)
       ftp.nlst.each do |file|
         fname = file.force_encoding("utf-8")
-        if is_image_file?(fname)
-          card = Card.new
-          card.base_url = url+"/"+fname
-          card.reset_from_base
+        fname_es = ERB::Util.url_encode(fname)
+        if is_image_file?(fname_es.downcase)  
+          # Card find & init
+          card = Card.find_or_initialize_by(key_url: key+"/"+fname)
+          # Reset from base url
+          card.base_url = url+"/"+fname_es
+          card.reset_from_key
+          # Reset from image info
+          begin
+            open(card.img_info_url) do |http|            
+              html_response = http.read
+              json = JSON.parse(html_response)
+              card.image_width = json["width"]
+              card.image_height = json["height"]
+              card.image_type = json["type"]
+            end
+          rescue StandardError,Timeout::Error, SystemCallError, Errno::ECONNREFUSED
+            puts  $!
+          else
+            puts "opening "+card.img_info_url
+            puts "with key "+card.key_url
+          end
           card.save
-          #puts @counter.to_s + ":" + url+"/"+fname
-          #@counter += 1
         else
-          print_all_image(ftp, url+"/"+fname)
+          puts "digging into "+ key+"/"+fname
+          print_all_image(ftp, url+"/"+fname_es, key+"/"+fname)
         end
       end
       ftp.chdir("..")
@@ -51,9 +70,10 @@ class Admin < Grape::API
       
       puts "logged in, start shooting..."
       
-      url = "/upload/dev"
+      url = "/upload/"+params[:dir]
       
-      print_all_image(ftp, url)
+      print_all_image(ftp, url, url)
+      ftp.close
       
       #present :msg, files
       
