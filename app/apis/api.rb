@@ -147,7 +147,7 @@ class API < Grape::API
       if user
         present :userInfo, user, with: APIEntities::User
         present :totalCount, user.cards.count.to_s
-        present :cards, user.cards.paginate(:page => params[:page], :per_page => 3), with: APIEntities::Card
+        present :cards, user.cards.paginate(:page => params[:page], :per_page => 10), with: APIEntities::Card
       else
         error!({ "error" => "408 Unknow User ID" }, 408) unless user
       end

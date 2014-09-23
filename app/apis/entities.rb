@@ -21,7 +21,12 @@ module APIEntities
     expose :card_id, as: :cardId
     expose :title
     expose :cardHeight do |model, opts|
-      (model.image_height.to_i * 640 / model.image_width.to_i).to_i
+      if model.image_width
+        (model.image_height.to_i * 640 / model.image_width.to_i).to_i
+      else
+        0
+      end
+      
     end
     expose :favorites_count, as: :favoritesCount
     expose :img_standard_url, as: :imageUrl

@@ -92,19 +92,19 @@ describe API, "users", :type => :request do
     
     it "return user info" do
       cuser = create(:user)
-      user = create(:user_with_cards, cards_count: 10)
+      user = create(:user_with_cards, cards_count: 13)
       
       get "/dev/users/"+user.user_id, :token => cuser.private_token
       expect(last_response.status).to eq(200)
       json = JSON.parse(last_response.body)
-      expect(json["totalCount"]).to eq("10")
-      expect(json["cards"].size).to eq(3)
+      expect(json["totalCount"]).to eq("13")
+      expect(json["cards"].size).to eq(10)
       
-      get "/dev/users/"+user.user_id, :token => cuser.private_token, :page => 4
+      get "/dev/users/"+user.user_id, :token => cuser.private_token, :page => 2
       expect(last_response.status).to eq(200)
       json = JSON.parse(last_response.body)
-      expect(json["totalCount"]).to eq("10")
-      expect(json["cards"].size).to eq(1)
+      expect(json["totalCount"]).to eq("13")
+      expect(json["cards"].size).to eq(3)
       
     end
     
