@@ -1,6 +1,6 @@
 class Tag < ActiveRecord::Base
   
-  belongs_to :box
+  belongs_to :box, counter_cache: true
   belongs_to :card
   
   before_create :add_box_name

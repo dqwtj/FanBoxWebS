@@ -19,6 +19,10 @@ class Card < ActiveRecord::Base
     self.upyun_url+self.base_url+"!small"
   end
   
+  def img_thumb_url
+    self.upyun_url+self.base_url+"!thumbnail"
+  end
+  
   def img_info_url
     self.upyun_url+self.base_url+"!info"
   end
@@ -37,8 +41,22 @@ class Card < ActiveRecord::Base
       self.event = event_space_trim(items[5]) if items[6]
       self.source = items[6] if items[7]
       self.title = "数据来源："+self.source if self.source
-      self.boxes << Box.create_with(box_type: "topic").find_or_create_by(name: self.topic) if self.topic
-      self.boxes << Box.create_with(box_type: "event").find_or_create_by(name: self.event) if self.event
+      if self.topic
+        box_topic = Box.find_by(name: self.topic)
+        if !box_topic
+          box_topic = Box.create(name: self.topic, box_type: "topic")
+          box_topic.idols << idol
+        end
+        self.boxes << box_topic
+      end
+      if self.event
+        box_event = Box.find_by(name: self.event)
+        if !box_event
+          box_event = Box.create(name: self.event, box_type: "event")
+          box_event.idols << idol
+        end
+        self.boxes << box_event
+      end
     end
   end
   

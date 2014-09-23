@@ -28,6 +28,7 @@ class Admin < Grape::API
           card = Card.find_or_initialize_by(key_url: key+"/"+fname)
           # Reset from base url
           card.base_url = url+"/"+fname_es
+          card.user_id = @user.id if @user
           card.reset_from_key
           # Reset from image info
           begin
@@ -71,6 +72,7 @@ class Admin < Grape::API
       puts "logged in, start shooting..."
       
       url = "/upload/"+params[:dir]
+      @user = User.find params[:uid] if params[:uid]
       
       print_all_image(ftp, url, url)
       ftp.close

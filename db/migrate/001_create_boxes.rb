@@ -4,11 +4,10 @@ class CreateBoxes < ActiveRecord::Migration
     create_table :boxes do |t|
       t.string :name
       t.text :info
-      t.belongs_to :user
-      t.belongs_to :idol
-      t.integer :subscribes_count
+      t.integer :subscribes_count, default: 0
       t.integer :hit_count, default: 0
       t.string :box_type, default: "tag"
+      t.integer :tags_count, default: 0
       
       t.timestamps
     end
