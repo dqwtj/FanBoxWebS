@@ -1,5 +1,9 @@
+# encoding: utf-8
 require 'will_paginate'
 require 'will_paginate/active_record'
+require 'net/ftp'
+require 'erb'
+require 'open-uri'
 
 class API < Grape::API
   
