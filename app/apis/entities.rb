@@ -24,7 +24,11 @@ module APIEntities
       if model.image_width
         (model.image_height.to_i * 640 / model.image_width.to_i).to_i
       else
-        0
+        if model.height
+          model.height
+        else
+          0
+        end
       end
       
     end

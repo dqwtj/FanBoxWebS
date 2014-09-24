@@ -59,7 +59,7 @@ class API < Grape::API
           card.save
         else
           puts "digging into "+ key+"/"+fname
-          print_all_image(ftp, url+"/"+fname_es, key+"/"+fname)
+          print_all_image(ftp, url+"/"+fname_es, key+"/"+fname) unless fname.include(".")
         end
       end
       ftp.chdir("..")
