@@ -159,7 +159,7 @@ class API < Grape::API
     
     get do   
       present :totalCount, Card.all.count.to_s
-      present :data, Card.all.paginate(:page => params[:page], :per_page => 10), with: APIEntities::Card
+      present :data, Card.order(create_at: :desc).paginate(:page => params[:page], :per_page => 10), with: APIEntities::Card
     end
     
     get "/home" do
