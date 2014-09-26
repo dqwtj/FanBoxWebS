@@ -59,6 +59,7 @@ module APIEntities
   
   class Profile < Grape::Entity
     expose :user_id, as: :userId
+    expose :name
     expose :avatar_url, as: :avatarUrl
     expose :info, :address, :gender
     expose :cardsIds do |model, opts|
