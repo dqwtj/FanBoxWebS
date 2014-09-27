@@ -274,19 +274,25 @@ class API < Grape::API
       end
     end
     
-    post "/:id/favorite" do
+    post "/:id/zan" do
       authenticate!
       card = Card.find(params[:id].to_i - 1000000000)
       error!({ "error" => "409 Unknow Card ID" }, 409) unless card
-      current_user.favorites << card if card
+      if !current_user.zans.exists?(card)
+        current_user.zans << card
+        Card.increment_counter(:zans_count, card.id)
+      end
       { result: "1", message: "success" }
     end
     
-    post "/:id/unfavorite" do
+    post "/:id/unzan" do
       authenticate!
       card = Card.find(params[:id].to_i - 1000000000)
       error!({ "error" => "409 Unknow Card ID" }, 409) unless card
-      current_user.favorites.delete(card) if card
+      if current_user.zans.exists?(card)
+        current_user.zans.delete(card) if card
+        Card.decrement_counter(:zans_count, card.id)
+      end
       { result: "1", message: "success" }
     end
     
@@ -325,21 +331,23 @@ class API < Grape::API
       { result: "1", message: "success" }
     end
     
-    post "/:id/zan" do
+    post "/:id/favorite" do
       authenticate!
       card = Card.find(params[:id].to_i - 1000000000)
       error!({ "error" => "409 Unknow Card ID" }, 409) unless card
-      current_user.add_zan(card.card_id)
-      Card.increment_counter(:zans_count, card.id)
+      current_user.add_favorite(card.card_id)
+      #TODO: Unsafe increment
+      Card.increment_counter(:favorites_count, card.id)
       { result: "1", message: "success" }
     end
     
-    post "/:id/unzan" do
+    post "/:id/unfavorite" do
       authenticate!
       card = Card.find(params[:id].to_i - 1000000000)
       error!({ "error" => "409 Unknow Card ID" }, 409) unless card
-      current_user.del_zan(card.card_id)
-      Card.decrement_counter(:zans_count, card.id)
+      current_user.del_favorite(card.card_id)
+      #TODO: Unsafe decrement
+      Card.decrement_counter(:favorites_count, card.id)
       { result: "1", message: "success" }
     end
     

@@ -63,7 +63,7 @@ describe API, "cards", :type => :request do
     
   end
   
-  describe "POST /dev/cards/:id/zan" do
+  describe "POST /dev/cards/:id/favorite" do
     
     it "return success message" do
       
@@ -71,35 +71,35 @@ describe API, "cards", :type => :request do
       card1 = create(:card)
       card2 = create(:card)
       
-      expect(user.zans_list.size).to eq(0)
+      expect(user.favorites_list.size).to eq(0)
       
-      post "/dev/cards/"+card1.card_id+"/zan", :token => user.private_token
+      post "/dev/cards/"+card1.card_id+"/favorite", :token => user.private_token
       user.reload
       expect(last_response.status).to eq(201)
       json = JSON.parse(last_response.body)
       expect(json["result"]).to eq("1")
-      expect(user.zans_list.size).to eq(1)
+      expect(user.favorites_list.size).to eq(1)
       
-      post "/dev/cards/"+card2.card_id+"/zan", :token => user.private_token
+      post "/dev/cards/"+card2.card_id+"/favorite", :token => user.private_token
       user.reload
       expect(last_response.status).to eq(201)
       json = JSON.parse(last_response.body)
       expect(json["result"]).to eq("1")
-      expect(user.zans_list.size).to eq(2)
+      expect(user.favorites_list.size).to eq(2)
       
-      post "/dev/cards/"+card2.card_id+"/zan", :token => user.private_token
+      post "/dev/cards/"+card2.card_id+"/favorite", :token => user.private_token
       user.reload
       expect(last_response.status).to eq(201)
       json = JSON.parse(last_response.body)
       expect(json["result"]).to eq("1")
-      expect(user.zans_list.size).to eq(2)
+      expect(user.favorites_list.size).to eq(2)
       
       
     end
     
   end
   
-  describe "POST /dev/cards/:id/unzan" do
+  describe "POST /dev/cards/:id/unfavorite" do
     
     it "return success message" do
       
@@ -107,38 +107,38 @@ describe API, "cards", :type => :request do
       card1 = create(:card)
       card2 = create(:card)
       card3 = create(:card)
-      user.add_zan(card1.card_id)
-      user.add_zan(card2.card_id)
+      user.add_favorite(card1.card_id)
+      user.add_favorite(card2.card_id)
       
-      expect(user.zans_list.size).to eq(2)
+      expect(user.favorites_list.size).to eq(2)
       
-      post "/dev/cards/"+card3.card_id+"/unzan", :token => user.private_token
+      post "/dev/cards/"+card3.card_id+"/unfavorite", :token => user.private_token
       user.reload
       expect(last_response.status).to eq(201)
       json = JSON.parse(last_response.body)
       expect(json["result"]).to eq("1")
-      expect(user.zans_list.size).to eq(2)
+      expect(user.favorites_list.size).to eq(2)
       
-      post "/dev/cards/"+card2.card_id+"/unzan", :token => user.private_token
+      post "/dev/cards/"+card2.card_id+"/unfavorite", :token => user.private_token
       user.reload
       expect(last_response.status).to eq(201)
       json = JSON.parse(last_response.body)
       expect(json["result"]).to eq("1")
-      expect(user.zans_list.size).to eq(1)
+      expect(user.favorites_list.size).to eq(1)
       
-      post "/dev/cards/"+card1.card_id+"/unzan", :token => user.private_token
+      post "/dev/cards/"+card1.card_id+"/unfavorite", :token => user.private_token
       user.reload
       expect(last_response.status).to eq(201)
       json = JSON.parse(last_response.body)
       expect(json["result"]).to eq("1")
-      expect(user.zans_list.size).to eq(0)
+      expect(user.favorites_list.size).to eq(0)
       
-      post "/dev/cards/"+card1.card_id+"/unzan", :token => user.private_token
+      post "/dev/cards/"+card1.card_id+"/unfavorite", :token => user.private_token
       user.reload
       expect(last_response.status).to eq(201)
       json = JSON.parse(last_response.body)
       expect(json["result"]).to eq("1")
-      expect(user.zans_list.size).to eq(0)
+      expect(user.favorites_list.size).to eq(0)
       
       
     end
@@ -216,40 +216,77 @@ describe API, "cards", :type => :request do
     
   end
   
-  describe "POST /dev/card/:id/favorite" do
+  describe "POST /dev/card/:id/zan" do
     
     it "return success message" do
       
       user = create(:user)
       card = create(:card)
       
-      post "/dev/cards/"+card.card_id+"/favorite", :token => user.private_token
+      post "/dev/cards/"+card.card_id+"/zan", :token => user.private_token
       
       expect(last_response.status).to eq(201)
       json = JSON.parse(last_response.body)
       expect(json["result"]).to eq("1")
       user.reload
-      expect(user.favorites.count).to eq(1)
+      expect(user.zans.count).to eq(1)
+      card.reload
+      expect(card.zans_count).to eq(1)
+      
+      post "/dev/cards/"+card.card_id+"/zan", :token => user.private_token
+      
+      expect(last_response.status).to eq(201)
+      json = JSON.parse(last_response.body)
+      expect(json["result"]).to eq("1")
+      user.reload
+      expect(user.zans.count).to eq(1)
+      card.reload
+      expect(card.zans_count).to eq(1)
+
       
     end
     
   end
   
-  describe "POST /dev/card/:id/unfavorite" do
+  describe "POST /dev/card/:id/unzan" do
     
     it "return success message" do
       
       user = create(:user)
-      card = create(:card)
-      user.favorites << card
+      card1 = create(:card)
+      card2 = create(:card)
+      user.zans << card1
+      Card.increment_counter(:zans_count, card1.id)
       
-      post "/dev/cards/"+card.card_id+"/unfavorite", :token => user.private_token
+      post "/dev/cards/"+card2.card_id+"/unzan", :token => user.private_token
       
       expect(last_response.status).to eq(201)
       json = JSON.parse(last_response.body)
       expect(json["result"]).to eq("1")
       user.reload
-      expect(user.favorites.count).to eq(0)
+      expect(user.zans.count).to eq(1)
+      card1.reload
+      expect(card1.zans_count).to eq(1)
+      
+      post "/dev/cards/"+card1.card_id+"/unzan", :token => user.private_token
+      
+      expect(last_response.status).to eq(201)
+      json = JSON.parse(last_response.body)
+      expect(json["result"]).to eq("1")
+      user.reload
+      expect(user.zans.count).to eq(0)
+      card1.reload
+      expect(card1.zans_count).to eq(0)
+      
+      post "/dev/cards/"+card1.card_id+"/unzan", :token => user.private_token
+      
+      expect(last_response.status).to eq(201)
+      json = JSON.parse(last_response.body)
+      expect(json["result"]).to eq("1")
+      user.reload
+      expect(user.zans.count).to eq(0)
+      card1.reload
+      expect(card1.zans_count).to eq(0)
       
     end
     

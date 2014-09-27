@@ -32,7 +32,7 @@ module APIEntities
       end
       
     end
-    expose :favorites_count, as: :favoritesCount
+    expose :zans_count, as: :zansCount
     expose :img_standard_url, as: :imageUrl
     expose :img_preview_url, as: :previewImageUrl
     #TODO need less SQL query

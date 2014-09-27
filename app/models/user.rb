@@ -7,7 +7,7 @@ class User < ActiveRecord::Base
   has_many :boxes, -> { distinct }, through: :subscribes
   has_many :fans, dependent: :destroy
   has_many :idols, -> { distinct }, through: :fans
-  has_and_belongs_to_many :favorites, -> { uniq }, class_name: "Card"
+  has_and_belongs_to_many :zans, -> { uniq }, class_name: "Card"
   has_and_belongs_to_many :followers, -> { uniq }, class_name: "User", foreign_key: "followee_id", join_table: "followees_followers", association_foreign_key: "follower_id"
   has_and_belongs_to_many :followees, -> { uniq }, class_name: "User", foreign_key: "follower_id", join_table: "followees_followers", association_foreign_key: "followee_id"
   
@@ -15,24 +15,24 @@ class User < ActiveRecord::Base
     (self.id + 2000000000).to_s
   end
   
-  def add_zan (value)
-    if self.zans
-      self.update(zans: self.zans + "," + value) unless self.zans_list.index(value)
+  def add_favorite (value)
+    if self.favorites
+      self.update(favorites: self.favorites + "," + value) unless self.favorites_list.index(value)
     else
-      self.update(zans: value)
+      self.update(favorites: value)
     end
   end
   
-  def del_zan (value)
-    if self.zans && self.zans_list.index(value)
-      list = self.zans_list
+  def del_favorite (value)
+    if self.favorites && self.favorites_list.index(value)
+      list = self.favorites_list
       list.delete(value)
-      self.update(zans: list.join(","))
+      self.update(favorites: list.join(","))
     end
   end
 
-  def zans_list
-    self.zans ? self.zans.split(",") : []
+  def favorites_list
+    self.favorites ? self.favorites.split(",") : []
   end
   
   # 重新生成 Private Token
