@@ -1,10 +1,10 @@
 class Card < ActiveRecord::Base
   validates :base_url, :presence => true
   belongs_to :user, counter_cache: true
-  has_many :tags
+  has_many :tags, dependent: :destroy
   has_many :boxes, through: :tags
   has_and_belongs_to_many :users
-  has_many :marks
+  has_many :marks, dependent: :destroy
   has_many :idols, through: :marks
   
   def img_preview_url
@@ -59,6 +59,7 @@ class Card < ActiveRecord::Base
       end
     end
   end
+
   
   protected
     def upyun_url

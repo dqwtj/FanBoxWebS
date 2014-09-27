@@ -8,6 +8,8 @@ class Box < ActiveRecord::Base
   has_many :users, through: :subscribes
   has_and_belongs_to_many :idols
   
+  belongs_to :user
+  
   def box_id
     (self.id + 3000000000).to_s
   end

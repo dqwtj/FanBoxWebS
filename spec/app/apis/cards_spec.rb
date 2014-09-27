@@ -63,6 +63,42 @@ describe API, "cards", :type => :request do
     
   end
   
+  describe "POST /dev/cards/:id/zan" do
+    
+    it "return success message" do
+      
+      user = create(:user_with_cards, cards_count: 5)
+      card1 = create(:card)
+      card2 = create(:card)
+      
+      expect(user.zans_list.size).to eq(0)
+      
+      post "/dev/cards/"+card1.card_id+"/zan", :token => user.private_token
+      user.reload
+      expect(last_response.status).to eq(201)
+      json = JSON.parse(last_response.body)
+      expect(json["result"]).to eq("1")
+      expect(user.zans_list.size).to eq(1)
+      
+      post "/dev/cards/"+card2.card_id+"/zan", :token => user.private_token
+      user.reload
+      expect(last_response.status).to eq(201)
+      json = JSON.parse(last_response.body)
+      expect(json["result"]).to eq("1")
+      expect(user.zans_list.size).to eq(2)
+      
+      post "/dev/cards/"+card2.card_id+"/zan", :token => user.private_token
+      user.reload
+      expect(last_response.status).to eq(201)
+      json = JSON.parse(last_response.body)
+      expect(json["result"]).to eq("1")
+      expect(user.zans_list.size).to eq(2)
+      
+      
+    end
+    
+  end
+  
   describe "POST /dev/card/:id/tag" do
     
     it "tag one or more box, return success message" do
@@ -118,11 +154,11 @@ describe API, "cards", :type => :request do
       idol3 = create(:idol)
       idol4 = create(:idol)
       
-      post "/dev/cards/"+card.card_id+"/mark", :token => user.private_token, :idol_ids => [idol2.idol_id, idol3.idol_id, idol4.idol_id]
+      post "/dev/cards/"+card.card_id+"/mark", :token => user.private_token, :idol_ids => [idol2.idol_id, idol4.idol_id]
       expect(last_response.status).to eq(201)
       json = JSON.parse(last_response.body)
       expect(json["result"]).to eq("1")
-      expect(card.idols.count).to eq(4)
+      expect(card.idols.count).to eq(3)
       
       post "/dev/cards/"+card.card_id+"/mark", :token => user.private_token, :idol_ids => [idol3.idol_id, idol4.idol_id]
       expect(last_response.status).to eq(201)

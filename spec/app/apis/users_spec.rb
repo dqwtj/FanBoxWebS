@@ -59,6 +59,9 @@ describe API, "users", :type => :request do
     it "return user profile info" do
       
       user = create(:user_with_cards, cards_count: 10)
+      card = create(:card)
+      user.followees << create_list(:user, 10)
+      user.add_zan(card.id)
       get "/dev/users/profile", :token => user.private_token
       expect(last_response.status).to eq(200)
       json = JSON.parse(last_response.body)
@@ -68,7 +71,8 @@ describe API, "users", :type => :request do
       expect(json["address"]).to eq(user.address)
       expect(json["gender"]).to eq(user.gender)
       expect(json["cardsIds"].size).to eq(10)
-      
+      expect(json["zansIds"].size).to eq(1)
+      expect(json["followeesIds"].size).to eq(10)
     end
     
   end
@@ -108,6 +112,61 @@ describe API, "users", :type => :request do
       
     end
     
+  end
+  
+  describe "POST /dev/users/:id/follow" do
+    it "return success message" do
+      cuser = create(:user)
+      user = create(:user)
+      post "/dev/users/"+user.user_id+"/follow", :token => cuser.private_token
+      expect(last_response.status).to eq(201)
+      json = JSON.parse(last_response.body)
+      expect(json["result"]).to eq("1")
+      expect(user.followers.count).to eq(1)
+      expect(cuser.followees.count).to eq(1)
+      
+      post "/dev/users/"+user.user_id+"/follow", :token => cuser.private_token
+      expect(last_response.status).to eq(201)
+      json = JSON.parse(last_response.body)
+      expect(json["result"]).to eq("1")
+      expect(user.followers.count).to eq(1)
+      expect(cuser.followees.count).to eq(1)
+      
+    end
+  end
+  
+  describe "POST /dev/users/:id/unfollow" do
+    it "return success message" do
+      cuser = create(:user)
+      user1 = create(:user)
+      user2 = create(:user)
+      cuser.followees << user1
+      post "/dev/users/"+user2.user_id+"/unfollow", :token => cuser.private_token
+      expect(last_response.status).to eq(201)
+      json = JSON.parse(last_response.body)
+      expect(json["result"]).to eq("1")
+      expect(user1.followers.count).to eq(1)
+      expect(user2.followers.count).to eq(0)
+      expect(cuser.followees.count).to eq(1)
+      
+      
+      post "/dev/users/"+user1.user_id+"/unfollow", :token => cuser.private_token
+      expect(last_response.status).to eq(201)
+      json = JSON.parse(last_response.body)
+      expect(json["result"]).to eq("1")
+      expect(user1.followers.count).to eq(0)
+      expect(user2.followers.count).to eq(0)
+      expect(cuser.followees.count).to eq(0)
+      
+      post "/dev/users/"+user1.user_id+"/unfollow", :token => cuser.private_token
+      expect(last_response.status).to eq(201)
+      json = JSON.parse(last_response.body)
+      expect(json["result"]).to eq("1")
+      expect(user1.followers.count).to eq(0)
+      expect(user2.followers.count).to eq(0)
+      expect(cuser.followees.count).to eq(0)
+      
+    end
   end
   
 

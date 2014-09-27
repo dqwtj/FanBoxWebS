@@ -39,8 +39,8 @@ module APIEntities
     expose :userId do |model, opts|
       model.user.user_id
     end
-    expose :userInfo do |model, opts|
-      model.user.info
+    expose :userName do |model, opts|
+      model.user.name
     end
     expose :userAvatar do |model, opts|
       model.user.avatar_url
@@ -68,7 +68,12 @@ module APIEntities
     expose :favoritesIds do |model, opts|
       model.favorites.ids.map {|id| (id+1000000000).to_s }
     end
+    expose :followeesIds do |model, opts|
+      model.followees.ids.map {|id| (id+2000000000).to_s }
+    end
+    expose :zans_list, as: :zansIds
     expose :boxes, using: APIEntities::Box
+    expose :idols, using: APIEntities::Idol
   end
   
   class User < Grape::Entity

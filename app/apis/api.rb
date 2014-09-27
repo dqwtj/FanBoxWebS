@@ -80,9 +80,13 @@ class API < Grape::API
         u.mobile = params[:mobile]
         u.encrypted_password = params[:password]
         u.weibo_uid = params[:uid]
+        u.info = params[:info]
+        u.avatar_url = params[:avatar_url]
+        u.address = params[:address]
+        u.gender = params[:gender]
       end
       if user.save
-        present :token, user.update_private_token
+        present :token, user.private_token
       else
         error!({ "error" => "404 Creatation Failed", "message" => user.errors }, 404)
       end
@@ -144,13 +148,26 @@ class API < Grape::API
     get "/:id" do
       authenticate!
       user = User.find(params[:id].to_i - 2000000000)
-      if user
-        present :userInfo, user, with: APIEntities::User
-        present :totalCount, user.cards.count.to_s
-        present :cards, user.cards.paginate(:page => params[:page], :per_page => 10), with: APIEntities::Card
-      else
-        error!({ "error" => "408 Unknow User ID" }, 408) unless user
-      end
+      error!({ "error" => "408 Unknow User ID" }, 408) unless user
+      present :userInfo, user, with: APIEntities::User
+      present :totalCount, user.cards.count.to_s
+      present :cards, user.cards.paginate(:page => params[:page], :per_page => 10), with: APIEntities::Card
+    end
+    
+    post "/:id/follow" do
+      authenticate!
+      user = User.find(params[:id].to_i - 2000000000)
+      error!({ "error" => "408 Unknow User ID" }, 408) unless user
+      user.followers << current_user
+      { result: "1", message: "success" }
+    end
+    
+    post "/:id/unfollow" do
+      authenticate!
+      user = User.find(params[:id].to_i - 2000000000)
+      error!({ "error" => "408 Unknow User ID" }, 408) unless user
+      current_user.followees.delete(user)
+      { result: "1", message: "success" }
     end
     
   end
@@ -305,6 +322,15 @@ class API < Grape::API
       authenticate!
       card = Card.find(params[:id].to_i - 1000000000)
       error!({ "error" => "409 Unknow Card ID" }, 409) unless card
+      { result: "1", message: "success" }
+    end
+    
+    post "/:id/zan" do
+      authenticate!
+      card = Card.find(params[:id].to_i - 1000000000)
+      error!({ "error" => "409 Unknow Card ID" }, 409) unless card
+      current_user.add_zan(card.card_id)
+      Card.increment_counter(:zans_count, card.id)
       { result: "1", message: "success" }
     end
     

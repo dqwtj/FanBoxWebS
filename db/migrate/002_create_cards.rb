@@ -14,6 +14,7 @@ class CreateCards < ActiveRecord::Migration
       t.string :c_type
       t.integer :height
       t.integer :favorites_count, default: 0
+      t.integer :zans_count, default: 0
       t.string :base_url, limit: 2048
       t.string :key_url, limit: 2048
       t.integer :user_id
