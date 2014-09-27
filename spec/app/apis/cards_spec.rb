@@ -99,6 +99,52 @@ describe API, "cards", :type => :request do
     
   end
   
+  describe "POST /dev/cards/:id/unzan" do
+    
+    it "return success message" do
+      
+      user = create(:user_with_cards, cards_count: 5)
+      card1 = create(:card)
+      card2 = create(:card)
+      card3 = create(:card)
+      user.add_zan(card1.card_id)
+      user.add_zan(card2.card_id)
+      
+      expect(user.zans_list.size).to eq(2)
+      
+      post "/dev/cards/"+card3.card_id+"/unzan", :token => user.private_token
+      user.reload
+      expect(last_response.status).to eq(201)
+      json = JSON.parse(last_response.body)
+      expect(json["result"]).to eq("1")
+      expect(user.zans_list.size).to eq(2)
+      
+      post "/dev/cards/"+card2.card_id+"/unzan", :token => user.private_token
+      user.reload
+      expect(last_response.status).to eq(201)
+      json = JSON.parse(last_response.body)
+      expect(json["result"]).to eq("1")
+      expect(user.zans_list.size).to eq(1)
+      
+      post "/dev/cards/"+card1.card_id+"/unzan", :token => user.private_token
+      user.reload
+      expect(last_response.status).to eq(201)
+      json = JSON.parse(last_response.body)
+      expect(json["result"]).to eq("1")
+      expect(user.zans_list.size).to eq(0)
+      
+      post "/dev/cards/"+card1.card_id+"/unzan", :token => user.private_token
+      user.reload
+      expect(last_response.status).to eq(201)
+      json = JSON.parse(last_response.body)
+      expect(json["result"]).to eq("1")
+      expect(user.zans_list.size).to eq(0)
+      
+      
+    end
+    
+  end
+  
   describe "POST /dev/card/:id/tag" do
     
     it "tag one or more box, return success message" do

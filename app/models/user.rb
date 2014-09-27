@@ -17,9 +17,17 @@ class User < ActiveRecord::Base
   
   def add_zan (value)
     if self.zans
-      self.update(zans: self.zans + "," + value) unless self.zans_list.include?(value)
+      self.update(zans: self.zans + "," + value) unless self.zans_list.index(value)
     else
       self.update(zans: value)
+    end
+  end
+  
+  def del_zan (value)
+    if self.zans && self.zans_list.index(value)
+      list = self.zans_list
+      list.delete(value)
+      self.update(zans: list.join(","))
     end
   end
 

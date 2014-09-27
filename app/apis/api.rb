@@ -334,6 +334,15 @@ class API < Grape::API
       { result: "1", message: "success" }
     end
     
+    post "/:id/unzan" do
+      authenticate!
+      card = Card.find(params[:id].to_i - 1000000000)
+      error!({ "error" => "409 Unknow Card ID" }, 409) unless card
+      current_user.del_zan(card.card_id)
+      Card.decrement_counter(:zans_count, card.id)
+      { result: "1", message: "success" }
+    end
+    
     delete "/:id" do
       authenticate!
       card = current_user.cards.find(params[:id].to_i - 1000000000)
