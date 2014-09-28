@@ -3,5 +3,5 @@ worker_processes 4
 
 Rainbows! do
   use :ThreadSpawn
-  worker_connections 100
+  worker_connections 25
 end
