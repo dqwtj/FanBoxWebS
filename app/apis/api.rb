@@ -73,7 +73,7 @@ class API < Grape::API
       # signature = Digest::MD5.hexdigest(params[:mobile] + '&'+'vuEqnXFYyJnGiiJeI7lbwpmHI0M')
       # error!({ "error" => "401 Unauthorized" }, 401) unless signature = params[:signature]
       error!({ "error" => "404 Creatation Failed", "messange" =>  "User Name Used" }, 404) if Box.find_by name: params[:name]
-      error!({ "error" => "404 Creatation Failed", "messange" =>  "Mobile Number Used" }, 404) if User.find_by mobile: params[:mobile]
+      error!({ "error" => "404 Creatation Failed", "messange" =>  "Mobile Number Used" }, 404) if params[:mobile]!="weibo" && User.find_by(mobile: params[:mobile]) 
       error!({ "error" => "404 Creatation Failed", "messange" =>  "User Name Used" }, 404) if User.find_by name: params[:name]
       user = User.new do |u|
         u.name = params[:name]
