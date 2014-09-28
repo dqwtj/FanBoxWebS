@@ -1,7 +1,7 @@
 module APIEntities
   class Tag < Grape::Entity
   
-    expose :box_id, as: :boxId do |model, opts|
+    expose :boxId do |model, opts|
       (model.box_id + 3000000000).to_s
     end
     expose :name
@@ -10,8 +10,10 @@ module APIEntities
   
   end
   
-  class Idol < Grape::Entity
-    expose :idol_id, as: :idolId
+  class Mark < Grape::Entity
+    expose :idolId  do |model, opts|
+      (model.idol_id + 4000000000).to_s
+    end
     expose :name
     expose :avatar_url, as: :avatarUrl
   end
@@ -46,15 +48,19 @@ module APIEntities
       model.user.avatar_url
     end
     expose :tags, using: APIEntities::Tag
-    expose :idols, using: APIEntities::Idol
+    expose :marks, using: APIEntities::Mark
   end
   
   class Box < Grape::Entity
-    expose :id, as: :boxId do |model, opts|
-      (model.id + 3000000000).to_s
-    end
+    expose :box_id, as: :boxId
     expose :name
     expose :hit_count, as: :hitCount
+  end
+  
+  class Idol < Grape::Entity
+    expose :idol_id, as: :idolId
+    expose :name
+    expose :avatar_url, as: :avatarUrl
   end
   
   class Profile < Grape::Entity
