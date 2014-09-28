@@ -1,8 +1,7 @@
 # rainbows config
-worker_processes 1
+worker_processes 4
 
 Rainbows! do
-  # use :ThreadPool
   use :ThreadSpawn
-  worker_connections 2
+  worker_connections 100
 end
