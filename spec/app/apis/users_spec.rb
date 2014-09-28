@@ -96,6 +96,32 @@ describe API, "users", :type => :request do
   
   describe "GET /dev/users/:id" do
     
+    it "return a list of cards" do
+      user = create(:user)
+      
+      create_list(:card, 13) do |card|
+        user.add_favorite(card.card_id)
+        Card.increment_counter(:favorites_count, card.id)
+      end
+      
+      get "/dev/users/favorites", :token => user.private_token
+      expect(last_response.status).to eq(200)
+      json = JSON.parse(last_response.body)
+      expect(json["totalCount"]).to eq("13")
+      expect(json["cards"].size).to eq(10)
+      
+      get "/dev/users/favorites", :token => user.private_token, :page => 2
+      expect(last_response.status).to eq(200)
+      json = JSON.parse(last_response.body)
+      expect(json["totalCount"]).to eq("13")
+      expect(json["cards"].size).to eq(3)
+      
+    end
+    
+  end
+  
+  describe "GET /dev/users/:id" do
+    
     it "return user info" do
       cuser = create(:user)
       user = create(:user_with_cards, cards_count: 13)
