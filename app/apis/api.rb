@@ -141,8 +141,15 @@ class API < Grape::API
     
     get "/favorites" do
       authenticate!
-      present :totalCount, current_user.favorites.count.to_s
-      present :cards, current_user.favorites.paginate(:page => params[:page], :per_page => 10), with: APIEntities::Card
+      counter = current_user.favorites_list.count
+      page = params[:page] ? params[:page].to_i : 1
+      present :totalCount, counter.to_s
+      if counter > (page-1)*10
+        cards_ids = current_user.favorites_list[(page-1)*10, 10].map {|id| id.to_i - 1000000000}
+        present :cards, Card.includes(:marks, :tags, :user).find(cards_ids), with: APIEntities::Card
+      else
+        present :cards, []
+      end
     end
     
     get "/:id" do
