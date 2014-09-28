@@ -61,7 +61,8 @@ describe API, "users", :type => :request do
       user = create(:user_with_cards, cards_count: 10)
       card = create(:card)
       user.followees << create_list(:user, 10)
-      user.add_zan(card.id)
+      user.zans << card
+      user.add_favorite(card.card_id)
       get "/dev/users/profile", :token => user.private_token
       expect(last_response.status).to eq(200)
       json = JSON.parse(last_response.body)
@@ -72,6 +73,7 @@ describe API, "users", :type => :request do
       expect(json["gender"]).to eq(user.gender)
       expect(json["cardsIds"].size).to eq(10)
       expect(json["zansIds"].size).to eq(1)
+      expect(json["favoritesIds"].size).to eq(1)
       expect(json["followeesIds"].size).to eq(10)
     end
     

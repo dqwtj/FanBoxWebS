@@ -65,13 +65,13 @@ module APIEntities
     expose :cardsIds do |model, opts|
       model.cards.ids.map {|id| (id+1000000000).to_s }
     end
-    expose :favoritesIds do |model, opts|
-      model.favorites.ids.map {|id| (id+1000000000).to_s }
+    expose :zansIds do |model, opts|
+      model.zans.ids.map {|id| (id+1000000000).to_s }
     end
     expose :followeesIds do |model, opts|
       model.followees.ids.map {|id| (id+2000000000).to_s }
     end
-    expose :zans_list, as: :zansIds
+    expose :favorites_list, as: :favoritesIds
     expose :boxes, using: APIEntities::Box
     expose :idols, using: APIEntities::Idol
   end
