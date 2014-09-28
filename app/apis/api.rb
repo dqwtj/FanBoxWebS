@@ -222,7 +222,7 @@ class API < Grape::API
       Box.increment_counter(:hit_count, box.id)
       
       present :boxInfo, box, with: APIEntities::Box
-      present :totalCount, box.cards.count.to_s
+      present :totalCount, box.tags_count.to_s
       present :cards, box.cards.includes(:marks, :tags, :user).paginate(:page => params[:page], :per_page => 10), with: APIEntities::Card
     end
     
