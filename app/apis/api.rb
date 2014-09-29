@@ -146,7 +146,7 @@ class API < Grape::API
       present :totalCount, counter.to_s
       if counter > (page-1)*10
         cards_ids = current_user.favorites_list[(page-1)*10, 10].map {|id| id.to_i - 1000000000}
-        present :cards, Card.includes(:marks, :tags, :user).find(cards_ids), with: APIEntities::Card
+        present :cards, Card.eager_load(:marks, :tags, :user).find(cards_ids), with: APIEntities::Card
       else
         present :cards, []
       end
@@ -158,7 +158,7 @@ class API < Grape::API
       error!({ "error" => "408 Unknow User ID" }, 408) unless user
       present :userInfo, user, with: APIEntities::User
       present :totalCount, user.cards.count.to_s
-      present :cards, user.cards.includes(:marks, :tags, :user).paginate(:page => params[:page], :per_page => 10), with: APIEntities::Card
+      present :cards, user.cards.eager_load(:marks, :tags, :user).paginate(:page => params[:page], :per_page => 10), with: APIEntities::Card
     end
     
     post "/:id/follow" do
@@ -183,13 +183,13 @@ class API < Grape::API
     
     get do   
       present :totalCount, Card.all.count.to_s
-      present :data, Card.order(created_at: :desc).includes(:marks, :tags, :user).paginate(:page => params[:page], :per_page => 10), with: APIEntities::Card
+      present :data, Card.order(created_at: :desc).eager_load(:marks, :tags, :user).paginate(:page => params[:page], :per_page => 10), with: APIEntities::Card
     end
     
     get "/home" do
       authenticate!
       b_ids = current_user.boxes.ids
-      cards = Card.joins(:tags).where(tags: {box_id: b_ids}).includes(:user, :tags, :marks).paginate(:page => params[:page], :per_page => 10)
+      cards = Card.joins(:tags).where(tags: {box_id: b_ids}).eager_load(:user, :tags, :marks).paginate(:page => params[:page], :per_page => 10)
       present :totalCount, cards.count.to_s
       present :data, cards, with: APIEntities::Card
     end
@@ -246,7 +246,7 @@ class API < Grape::API
       
       present :boxInfo, box, with: APIEntities::Box
       present :totalCount, box.cards.count.to_s
-      present :cards, box.cards.includes(:marks, :tags, :user).paginate(:page => params[:page], :per_page => 10), with: APIEntities::Card
+      present :cards, box.cards.eager_load(:marks, :tags, :user).paginate(:page => params[:page], :per_page => 10), with: APIEntities::Card
     end
     
   end
@@ -385,7 +385,7 @@ class API < Grape::API
       error!({ "error" => "409 Unknow Idol ID" }, 409) unless idol
       present :idolInfo, idol, with: APIEntities::Idol
       present :totalCount, idol.cards.count.to_s
-      present :cards, idol.cards.includes(:marks, :tags, :user).paginate(:page => params[:page], :per_page => 10), with: APIEntities::Card
+      present :cards, idol.cards.eager_load(:marks, :tags, :user).paginate(:page => params[:page], :per_page => 10), with: APIEntities::Card
       
     end
     
