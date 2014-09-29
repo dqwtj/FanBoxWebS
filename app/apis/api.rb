@@ -230,7 +230,7 @@ class API < Grape::API
       
       present :boxInfo, box, with: APIEntities::Box
       present :totalCount, box.tags_count.to_s
-      present :cards, box.cards.includes(:marks, :tags, :user).paginate(:page => params[:page], :per_page => 10), with: APIEntities::Card
+      present :cards, box.cards.eager_load(:marks, :tags, :user).paginate(:page => params[:page], :per_page => 10), with: APIEntities::Card
     end
     
     get "/:id/touch/:cid" do
