@@ -21,6 +21,7 @@ describe API, "cards", :type => :request do
       expect(json["result"]).to eq("1")
       user.reload
       expect(user.cards_count).to eq( 1 )
+      expect(Card.last.img_preview_url).to eq( "#" )
       
     end
     

@@ -8,7 +8,7 @@ class Card < ActiveRecord::Base
   has_many :idols, through: :marks
   
   def img_preview_url
-    self.upyun_url+self.base_url+"!preview"
+    self.preview_url ? self.upyun_url+self.preview_url+"!preview" : "#"
   end
   
   def img_standard_url

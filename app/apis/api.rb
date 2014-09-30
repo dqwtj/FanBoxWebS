@@ -158,7 +158,7 @@ class API < Grape::API
       error!({ "error" => "408 Unknow User ID" }, 408) unless user
       present :userInfo, user, with: APIEntities::User
       present :totalCount, user.cards.count.to_s
-      present :cards, user.cards.eager_load(:marks, :tags, :user).paginate(:page => params[:page], :per_page => 10), with: APIEntities::Card
+      present :cards, user.cards.order(created_at: :desc).eager_load(:marks, :tags, :user).paginate(:page => params[:page], :per_page => 10), with: APIEntities::Card
     end
     
     post "/:id/follow" do
@@ -230,7 +230,7 @@ class API < Grape::API
       
       present :boxInfo, box, with: APIEntities::Box
       present :totalCount, box.tags_count.to_s
-      present :cards, box.cards.eager_load(:marks, :tags, :user).paginate(:page => params[:page], :per_page => 10), with: APIEntities::Card
+      present :cards, box.cards.order(created_at: :desc).eager_load(:marks, :tags, :user).paginate(:page => params[:page], :per_page => 10), with: APIEntities::Card
     end
     
     get "/:id/touch/:cid" do
@@ -246,7 +246,7 @@ class API < Grape::API
       
       present :boxInfo, box, with: APIEntities::Box
       present :totalCount, box.cards.count.to_s
-      present :cards, box.cards.eager_load(:marks, :tags, :user).paginate(:page => params[:page], :per_page => 10), with: APIEntities::Card
+      present :cards, box.cards.order(created_at: :desc).eager_load(:marks, :tags, :user).paginate(:page => params[:page], :per_page => 10), with: APIEntities::Card
     end
     
   end
@@ -259,6 +259,7 @@ class API < Grape::API
       card.title = params[:title] if params[:title]
       card.height = params[:height] if params[:height]
       card.base_url = params[:base_url] if params[:base_url]
+      card.preview_url = params[:preview_url] if params[:preview_url]
       if card.save
         current_user.cards << card
         { result: "1", message: card.card_id }
@@ -273,7 +274,8 @@ class API < Grape::API
       error!({ "error" => "409 Unknow Card ID" }, 409) unless card
       card.title = params[:title] if params[:title]
       card.height = params[:height] if params[:height]
-      card.base_url = params[:base_url] if params[:info]
+      card.base_url = params[:base_url] if params[:base_url]
+      card.preview_url = params[:preview_url] if params[:preview_url]
       if card.save
         { result: "1", message: "success" }
       else
@@ -385,7 +387,7 @@ class API < Grape::API
       error!({ "error" => "409 Unknow Idol ID" }, 409) unless idol
       present :idolInfo, idol, with: APIEntities::Idol
       present :totalCount, idol.cards.count.to_s
-      present :cards, idol.cards.eager_load(:marks, :tags, :user).paginate(:page => params[:page], :per_page => 10), with: APIEntities::Card
+      present :cards, idol.cards.order(created_at: :desc).eager_load(:marks, :tags, :user).paginate(:page => params[:page], :per_page => 10), with: APIEntities::Card
       
     end
     
