@@ -183,13 +183,15 @@ class API < Grape::API
     
     get do   
       present :totalCount, Card.all.count.to_s
-      present :data, Card.order(created_at: :desc).eager_load(:marks, :tags, :user).paginate(:page => params[:page], :per_page => 10), with: APIEntities::Card
+      if params[:page].to_i < 100
+        present :data, Card.order(created_at: :desc).eager_load(:marks, :tags, :user).paginate(:page => params[:page], :per_page => 10), with: APIEntities::Card
+      end
     end
     
     get "/home" do
       authenticate!
-      b_ids = current_user.boxes.ids
-      cards = Card.joins(:tags).where(tags: {box_id: b_ids}).eager_load(:user, :tags, :marks).paginate(:page => params[:page], :per_page => 10)
+      b_ids = current_user.idols.ids
+      cards = Card.joins(:marks).where(marks: {idol_id: b_ids}).order(created_at: :desc).eager_load(:user, :tags, :marks).paginate(:page => params[:page], :per_page => 10)
       present :totalCount, cards.count.to_s
       present :data, cards, with: APIEntities::Card
     end

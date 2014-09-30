@@ -29,10 +29,10 @@ describe API do
   describe "GET /dev/stream/home" do
     it "returns a list of cards" do
       user = create(:user)
-      box1 = create(:box_with_cards, cards_count: 8)
-      box2 = create(:box_with_cards, cards_count: 8)
-      box3 = create(:box_with_cards, cards_count: 8)
-      user.boxes << [box1, box2]
+      idol1 = create(:idol_with_cards, cards_count: 8)
+      idol2 = create(:idol_with_cards, cards_count: 8)
+      idol3 = create(:idol_with_cards, cards_count: 8)
+      user.idols << [idol1, idol2]
       
       get "/dev/stream/home", :token => user.private_token
       expect(last_response.status).to eq(200)
