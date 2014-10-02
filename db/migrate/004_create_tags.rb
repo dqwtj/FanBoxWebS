@@ -13,6 +13,7 @@ class CreateTags < ActiveRecord::Migration
       
       t.index :card_id
       t.index :box_id
+      t.index [:card_id, :box_id], unique: true
       
       t.timestamps
     end

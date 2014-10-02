@@ -62,9 +62,26 @@ describe API, "idols", :type => :request do
       get "/dev/idols/" + idol.idol_id + "/hot_boxes", :token => user.private_token
       expect(last_response.status).to eq(200)
       json = JSON.parse(last_response.body)
-      expect(json["boxes"].size).to eq(4)
+      expect(json["boxes"].size).to eq(10)
       expect(json["boxes"][0]["hitCount"]).to eq(123)
       expect(json["boxes"][3]["hitCount"]).to eq(23)
+    end
+    
+  end
+  
+  describe "GET /dev/idols/:id/nine" do
+    
+    it "returns a list of topic boxes" do
+      
+      idol = create(:idol)
+      user = create(:user)
+      
+      get "/dev/idols/" + idol.idol_id + "/nine", :token => user.private_token
+      expect(last_response.status).to eq(200)
+      json = JSON.parse(last_response.body)
+      expect(json["totalCount"]).to eq("8")
+      expect(json["nines"].size).to eq(8)
+      
     end
     
   end

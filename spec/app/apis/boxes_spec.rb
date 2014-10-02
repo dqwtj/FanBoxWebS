@@ -101,10 +101,10 @@ describe API, "boxes", :type => :request do
       
       idol = create(:idol)
       user = create(:user)
-      idol.boxes << create(:box, hit_count: 123)
-      idol.boxes << create(:box, hit_count: 112)
-      idol.boxes << create(:box, hit_count: 68)
-      idol.boxes << create(:box, hit_count: 23)
+      idol.boxes << create(:box, hit_count: 123, box_type: "event")
+      idol.boxes << create(:box, hit_count: 112, box_type: "event")
+      idol.boxes << create(:box, hit_count: 68, box_type: "event")
+      idol.boxes << create(:box, hit_count: 23, box_type: "event")
       
       get "/dev/boxes/hot", :token => user.private_token
       

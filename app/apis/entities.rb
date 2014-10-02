@@ -67,7 +67,7 @@ module APIEntities
     expose :user_id, as: :userId
     expose :name
     expose :avatar_url, as: :avatarUrl
-    expose :info, :address, :gender
+    expose :info, :address, :gender, :weibo_uid
     expose :cardsIds do |model, opts|
       model.cards.ids.map {|id| (id+1000000000).to_s }
     end
@@ -87,6 +87,15 @@ module APIEntities
     expose :name, :gender, :address, :info
     expose :avatar_url, as: :avatarUrl
     expose :idols, using: APIEntities::Idol
+  end
+  
+  class Nine < Grape::Entity
+    expose :box_id, as: :boxId
+    expose :name
+    expose :avatar_url, as: :avatarUrl
+    expose :line_1
+    expose :line_2
+    expose :hit_count, as: :hitCount
   end
   
 end

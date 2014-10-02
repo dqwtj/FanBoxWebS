@@ -202,7 +202,7 @@ class API < Grape::API
     
     get "/hot" do
       authenticate!
-      boxes = Box.where(:box_type => "tag")
+      boxes = Box.where(:box_type => "event")
       present :totalCount, boxes.count.to_s
       present :boxes, boxes.order(hit_count: :desc).paginate(:page => params[:page], :per_page => 20), with: APIEntities::Box
     end
@@ -388,6 +388,7 @@ class API < Grape::API
       idol = Idol.find(params[:id].to_i - 4000000000)
       error!({ "error" => "409 Unknow Idol ID" }, 409) unless idol
       present :idolInfo, idol, with: APIEntities::Idol
+      present :topics, Box.where()
       present :totalCount, idol.cards.count.to_s
       present :cards, idol.cards.order(created_at: :desc).eager_load(:marks, :tags, :user).paginate(:page => params[:page], :per_page => 10), with: APIEntities::Card
       
@@ -410,6 +411,20 @@ class API < Grape::API
       present :totalCount, idol.boxes.count.to_s
       present :boxes, idol.boxes.order(hit_count: :desc).paginate(:page => params[:page], :per_page => 10), with: APIEntities::Box
       
+    end
+    
+    get "/:id/nine" do
+      
+      authenticate!
+      idol = Idol.find(params[:id].to_i - 4000000000)
+      error!({ "error" => "409 Unknow Idol ID" }, 409) unless idol
+      boxes = idol.boxes.where(box_type: "topic")
+      nines = []
+      idol.topics_list.each do |topic|
+        nines << boxes.find_by(name: topic)
+      end
+      present :totalCount, nines.count.to_s
+      present :nines, nines, with: APIEntities::Nine
     end
         
   end
