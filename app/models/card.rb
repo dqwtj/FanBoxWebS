@@ -46,14 +46,14 @@ class Card < ActiveRecord::Base
         if !box_topic
           box_topic = idol.boxes.create(name: self.topic, box_type: "topic")
         end
-        Tag.find_or_create_by(card_id: self.id, box_id: box_topic.id)
+        self.boxes << box_topic unless Tag.find_by(card_id: self.id, box_id: box_topic.id)
       end
       if self.event
         box_event = idol.boxes.find_by(name: self.event)
         if !box_event
           box_event = idol.boxes.create(name: self.event, box_type: "event")
         end
-        Tag.find_or_create_by(card_id: self.id, box_id: box_topic.id)
+        self.boxes << box_event unless Tag.find_by(card_id: self.id, box_id: box_event.id)
       end
     end
   end

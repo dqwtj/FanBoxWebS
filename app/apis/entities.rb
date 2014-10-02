@@ -55,6 +55,7 @@ module APIEntities
     expose :box_id, as: :boxId
     expose :name
     expose :hit_count, as: :hitCount
+    expose :box_type, as: :boxType
   end
   
   class Idol < Grape::Entity

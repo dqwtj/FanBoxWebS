@@ -5,7 +5,7 @@ class Box < ActiveRecord::Base
   has_many :cards, through: :tags
   has_many :subscribes
   has_many :users, through: :subscribes
-  belongs_to :idol
+  belongs_to :idol, counter_cache: true
   
   belongs_to :user
   
