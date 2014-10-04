@@ -16,7 +16,7 @@ class User < ActiveRecord::Base
   end
   
   def add_favorite (value)
-    if self.favorites
+    if self.favorites && value
       self.update(favorites: self.favorites + "," + value) unless self.favorites_list.index(value)
     else
       self.update(favorites: value)
