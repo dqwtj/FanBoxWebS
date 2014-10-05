@@ -146,6 +146,7 @@ class API < Grape::API
       present :totalCount, counter.to_s
       if counter > (page-1)*10
         cards_ids = current_user.favorites_list[(page-1)*10, 10].map {|id| id.to_i - 1000000000}
+        cards_ids.shift if cards_ids[0] == ""
         present :cards, Card.eager_load(:marks, :tags, :user).find(cards_ids), with: APIEntities::Card
       else
         present :cards, []
