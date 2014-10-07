@@ -107,6 +107,14 @@ class API < Grape::API
       present :token, user.update_private_token
     end
     
+    post "/weibo_band" do
+      error!({ "error" => "406 Unknow Weibo User" }, 406) unless params[:uid]
+      user = User.find_by weibo_uid: params[:uid]
+      error!({ "error" => "406 Exsited Weibo User" }, 406) if user
+      user.update(weibo_uid: params[:uid])
+      { result: "1", message: "success" }
+    end
+    
     post "/weibo_unband" do
       error!({ "error" => "406 Unknow Weibo User" }, 406) unless params[:uid]
       user = User.find_by weibo_uid: params[:uid]
