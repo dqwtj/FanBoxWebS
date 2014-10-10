@@ -413,6 +413,16 @@ class API < Grape::API
       { result: "1", message: "success" }
     end
     
+    post "/:id/unfan" do
+      
+      authenticate!
+      idol = Idol.find(params[:id].to_i - 4000000000)
+      error!({ "error" => "409 Unknow Idol ID" }, 409) unless idol
+      current_user.idols.delete(idol)
+      { result: "1", message: "success" }
+      
+    end
+    
     get "/:id/hot_boxes" do
       
       authenticate!
