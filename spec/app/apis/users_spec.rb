@@ -44,7 +44,7 @@ describe API, "users", :type => :request do
     
     it "return success message" do
       user = create(:user, weibo_uid: 1234)
-      post "/dev/users/weibo_unband", :uid => 1234
+      post "/dev/users/weibo_unband", :token => user.private_token
       expect(last_response.status).to eq(201)
       json = JSON.parse(last_response.body)
       user.reload
