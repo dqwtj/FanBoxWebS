@@ -94,7 +94,7 @@ describe API, "users", :type => :request do
     
   end
   
-  describe "GET /dev/users/:id" do
+  describe "GET /dev/users/favorites" do
     
     it "return a list of cards" do
       user = create(:user)

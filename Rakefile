@@ -1,67 +1,79 @@
-#!/usr/bin/env rake
+require 'active_support'
+require 'active_record'
+
 require File.expand_path('../boot', __FILE__)
 
-task :rails_env do
+def get_env name, default=nil
+  ENV[name] || ENV[name.downcase] || default
 end
 
-task :environment do
-end
-
-module Rails
-  def self.application
-    Struct.new(:config, :paths) do
-      def load_seed
-        require File.expand_path('../application', __FILE__)
-        require File.expand_path('../db/seeds', __FILE__)
-      end
-    end.new(config, paths)
+namespace :db do
+  desc "prepare environment (utility)"
+  task :env do
+    require 'bundler'
+    env = get_env 'RACK_ENV', 'development'
+    Bundler.require :default, env.to_sym
+    unless defined?(DB_CONFIG)
+      databases = YAML.load_file File.dirname(__FILE__) + '/config/database.yml'
+      DB_CONFIG = databases[env]
+    end
+    puts "loaded config for #{env}"
   end
 
-  def self.config
-    require 'erb'
-    db_config = YAML.load(ERB.new(File.read("config/database.yml")).result)
-    Struct.new(:database_configuration).new(db_config)
+  desc "connect db (utility)"
+  task connect: :env do
+    "connecting to #{DB_CONFIG['database']}"
+    ActiveRecord::Base.establish_connection DB_CONFIG
   end
 
-  def self.paths
-    { 'db/migrate' => ["#{root}/db/migrate"] }
+  desc "create db for current RACK_ENV"
+  task create: :env do
+    puts "creating db #{DB_CONFIG['database']}"
+    ActiveRecord::Base.establish_connection DB_CONFIG.merge('database' => nil)
+    ActiveRecord::Base.connection.create_database DB_CONFIG['database'], charset: 'utf8'
+    ActiveRecord::Base.establish_connection DB_CONFIG
   end
 
-  def self.env
-    env = ENV['RACK_ENV'] || "development"
-    ActiveSupport::StringInquirer.new(env)
-  end
-
-  def self.root
-    File.dirname(__FILE__)
+  desc 'drop db for current RACK_ENV'
+  task drop: :env do
+    if get_env('RACK_ENV') == 'production'
+      puts "cannot drop production database!"
+    else
+      puts "dropping db #{DB_CONFIG['database']}"
+      ActiveRecord::Base.establish_connection DB_CONFIG.merge('database' => nil)
+      ActiveRecord::Base.connection.drop_database DB_CONFIG['database']
+    end
   end
   
-end
-
-namespace :g do
-  desc "Generate migration. Specify name in the NAME variable"
-  task :migration => :environment do
-    name = ENV['NAME'] || raise("Specify name: rake g:migration NAME=create_users")
-    timestamp = Time.now.strftime("%Y%m%d%H%M%S")
-
-    path = File.expand_path("../db/migrate/#{timestamp}_#{name}.rb", __FILE__)
-    migration_class = name.split("_").map(&:capitalize).join
-
-    File.open(path, 'w') do |file|
-      file.write <<-EOF.strip_heredoc
-        class #{migration_class} < ActiveRecord::Migration
-          def self.up
-          end
-
-          def self.down
-          end
-        end
-      EOF
-    end
-
-    puts "DONE"
-    puts path
+  desc "Migrate the database through scripts in db/migrate. Target specific version with VERSION=x"
+  task :migration => :connect do
+    ActiveRecord::Migrator.migrate('db/migrate', ENV["VERSION"] ? ENV["VERSION"].to_i : nil )
   end
-end
+  
+  desc 'run migrations'
+  task migrate: :connect do
+    version = get_env 'VERSION'
+    version = version ? version.to_i : nil
+    ActiveRecord::Migration.verbose = true
+    ActiveRecord::Migrator.migrate 'db/migrate', version
+  end
 
-Rake.load_rakefile "active_record/railties/databases.rake"
+  desc 'rollback migrations (STEP = 1 by default)'
+  task rollback: :connect do
+    step = get_env 'STEP'
+    step = step ? step.to_i : 1
+    ActiveRecord::Migrator.rollback 'db/migrate', step
+  end
+
+  desc "show current schema version"
+  task version: :connect do
+    puts ActiveRecord::Migrator.current_version
+  end
+  
+  desc 'Load the seed data from db/seeds.rb'
+  task :seed do
+    seed_file = File.join('db/seeds.rb')
+    load(seed_file) if File.exist?(seed_file)
+  end
+
+end
