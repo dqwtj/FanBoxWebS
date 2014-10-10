@@ -118,7 +118,7 @@ class API < Grape::API
     
     post "/weibo_unband" do
       authenticate!
-      if current_user.mobile == "weibo"
+      if current_user.mobile != "weibo"
         current_user.update(weibo_uid: nil)
         { result: "1", message: "success" }
       else
