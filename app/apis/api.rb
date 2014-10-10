@@ -108,10 +108,11 @@ class API < Grape::API
     end
     
     post "/weibo_band" do
+      authenticate!
       error!({ "error" => "406 Unknow Weibo User" }, 406) unless params[:uid]
       user = User.find_by weibo_uid: params[:uid]
       error!({ "error" => "406 Exsited Weibo User" }, 406) if user
-      user.update(weibo_uid: params[:uid])
+      current_user.update(weibo_uid: params[:uid])
       { result: "1", message: "success" }
     end
     
@@ -153,7 +154,7 @@ class API < Grape::API
       page = params[:page] ? params[:page].to_i : 1
       present :totalCount, counter.to_s
       if counter > (page-1)*10
-        cards_ids = current_user.favorites_list.reverse[(page-1)*10, 10]
+        cards_ids = current_user.favorites_list[(page-1)*10, 10]
         cards_ids.delete("")
         ids = cards_ids.map {|id| id.to_i - 1000000000}
         present :cards, Card.eager_load(:marks, :tags, :user).find(ids), with: APIEntities::Card
