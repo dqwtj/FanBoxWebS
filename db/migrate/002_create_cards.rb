@@ -19,6 +19,7 @@ class CreateCards < ActiveRecord::Migration
       t.string :preview_url, limit: 2048
       t.string :key_url, limit: 2048
       t.integer :user_id
+      t.boolean :soft_delete, default: false
       
       t.timestamps
     end

@@ -7,6 +7,8 @@ class Card < ActiveRecord::Base
   has_many :marks, dependent: :destroy
   has_many :idols, -> { distinct }, through: :marks
   
+  default_scope { where(soft_delete: false) }
+  
   def img_preview_url
     self.preview_url ? self.upyun_url+self.preview_url+"!preview" : "#"
   end
