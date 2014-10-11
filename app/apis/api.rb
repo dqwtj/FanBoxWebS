@@ -242,7 +242,7 @@ class API < Grape::API
       
       present :boxInfo, box, with: APIEntities::Box
       present :totalCount, box.tags_count.to_s
-      present :cards, Card.joins(:tags).where(tags: {box_id: box.id}).order(created_at: :desc).eager_load(:marks, :tags, :user).paginate(:page => params[:page], :per_page => 10), with: APIEntities::Card
+      present :cards, box.cards.order(created_at: :desc).includes(:user, :marks, :tags).paginate(:page => params[:page], :per_page => 10), with: APIEntities::Card
     end
     
     get "/:id/touch/:cid" do
@@ -258,7 +258,7 @@ class API < Grape::API
       
       present :boxInfo, box, with: APIEntities::Box
       present :totalCount, box.cards.count.to_s
-      present :cards, box.cards.order(created_at: :desc).eager_load(:marks, :tags, :user).paginate(:page => params[:page], :per_page => 10), with: APIEntities::Card
+      present :cards, box.cards.order(created_at: :desc).includes(:marks, :tags, :user).paginate(:page => params[:page], :per_page => 10), with: APIEntities::Card
     end
     
   end
