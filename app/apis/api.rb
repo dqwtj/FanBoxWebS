@@ -39,7 +39,7 @@ class API < Grape::API
           card = Card.find_or_initialize_by(key_url: key+"/"+fname)
           # Reset from base url
           card.base_url = url+"/"+fname_es
-          card.user_id = @user.id if @user
+          
           card.reset_from_key
           # Reset from image info
           begin
@@ -55,6 +55,11 @@ class API < Grape::API
           else
             puts "opening "+card.img_info_url
             puts "with key "+card.key_url
+          end
+          if params[:uid]
+            card.user_id = @user.id
+          else
+            card.user_id = card.idols.first.users.sample.id
           end
           card.save
         else
