@@ -14,11 +14,11 @@ class Box < ActiveRecord::Base
   end
   
   def line_1
-    self.line && self.line !="" ? self.line.splite("|",2)[0] : "######"
+    self.line && self.line !="" ? self.line.split("|",2)[0] : "######"
   end
   
   def line_2
-    self.line && self.line !="" ? self.line.splite("|",2)[1] : "XOXOXOXOXO"
+    self.line && self.line !="" ? self.line.split("|",2)[1] : "XOXOXOXOXO"
   end
   
 end
