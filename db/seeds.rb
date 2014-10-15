@@ -1,9 +1,9 @@
 # coding: utf-8
 
-i1 = Idol.create(name: "吴亦凡", topics: "现场,机场,综艺,私生,新闻,官图", weibo_name: "Mr_凡先生", weibo_uid: "3591355593", avatar_url: "http://ww4.sinaimg.cn/mw690/d60fbcc9jw8ehos8izg3cj20u00u0taq.jpg")
-i2 = Idol.create(name: "鹿晗", topics: "专场,现场,机场,新闻,综艺,私生", weibo_name: "M鹿M", weibo_uid: "1537790411", avatar_url: "http://ww3.sinaimg.cn/mw690/5ba8d1cbjw8efy9zcm3iaj20u00u0gny.jpg")
-i3 = Idol.create(name: "朴灿烈", topics: "现场,机场,综艺,私生,专场,其它,", avatar_url: "http://tp2.sinaimg.cn/1047641505/180/5649838344/1")
-i4 = Idol.create(name: "吴世勋", topics: "现场,新闻,专场,机场,综艺,私生", avatar_url: "http://tp2.sinaimg.cn/1047641505/180/5649838344/1")
+i1 = Idol.create(name: "吴亦凡", topics: "现场,机场,综艺,私生,新闻,官图", weibo_name: "Mr_凡先生", weibo_uid: "3591355593", avatar_url: "http://fanhe-photo.b0.upaiyun.com/intest/idols/WYF.jpg")
+i2 = Idol.create(name: "鹿晗", topics: "专场,现场,机场,综艺,新闻,私生", weibo_name: "M鹿M", weibo_uid: "1537790411", avatar_url: "http://fanhe-photo.b0.upaiyun.com/intest/idols/LH.jpg")
+i3 = Idol.create(name: "朴灿烈", topics: "现场,机场,综艺,私生,专场,其它", avatar_url: "http://fanhe-photo.b0.upaiyun.com/intest/idols/PCL.jpg")
+i4 = Idol.create(name: "吴世勋", topics: "现场,新闻,专场,机场,综艺,私生", avatar_url: "http://fanhe-photo.b0.upaiyun.com/intest/idols/WSX.jpg")
 
 i1.users << User.create(name: "缇娜女神嫁我", encrypted_password: "12345678", avatar_url: "http://fanhe-photo.b0.upaiyun.com/intest/users/WYF-1.jpg!avatar")
 i1.users << User.create(name: "给吴亦凡舔手=v=", encrypted_password: "12345678", avatar_url: "http://fanhe-photo.b0.upaiyun.com/intest/users/WYF-2.jpg!avatar")

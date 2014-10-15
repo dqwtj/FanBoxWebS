@@ -59,7 +59,13 @@ class API < Grape::API
           if params[:uid]
             card.user_id = @user.id
           else
-            card.user_id = card.idols.first.users.sample.id
+            if @source == card.source
+              card.user_id = @user.id
+            else
+              @user = card.idols.first.users.sample
+              card.user_id = @user.id
+              @source = card.source
+            end
           end
           card.save
         else

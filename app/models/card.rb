@@ -42,7 +42,7 @@ class Card < ActiveRecord::Base
       self.topic = items[4] if items[5]
       self.event = event_space_trim(items[5]) if items[6]
       self.source = items[6] if items[7]
-      self.title = "数据来源："+self.source if self.source
+      #self.title = "数据来源："+self.source if self.source
       if self.topic
         box_topic = idol.boxes.find_by(name: self.topic)
         if !box_topic
